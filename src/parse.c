@@ -1,4 +1,11 @@
 #include <stdio.h>
+#include "parse.h"
 
-int parse_args(int argc, char* argv[]);
-int parse_feed();
+ArgumentStruct parseArguments(int argc, char* argv[]) {
+	ArgumentStruct args;
+	args.url = "http://www.theverge.com/rss/frontpage";
+	
+	return args;	
+}
+
+int parseFeed();

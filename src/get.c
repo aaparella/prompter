@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include "get.h"
 
+/**
+ * Writes response from curl command to response struct
+ * Called multiple times, appends new response to previous data 
+ */ 
 static size_t write_data(void *response, size_t size, size_t nmemb, MessageStruct *message) {
 
 	// Calculate response of THIS PORTION OF MESSAGE and resize contents
@@ -26,10 +30,18 @@ static size_t write_data(void *response, size_t size, size_t nmemb, MessageStruc
 	return responseSize;
 }
 
+/**
+ * Perform curl request
+ * Stores response from request in response paramter
+ */
 int get(MessageStruct* response, char* url) {
 	
 	CURL* curl;  
 	CURLcode res;
+	
+	// Initialize response
+	response->size = 0;
+	response->contents = malloc(1);
 	
 	curl = curl_easy_init();
 	
@@ -52,6 +64,33 @@ int get(MessageStruct* response, char* url) {
 		// Cleanup curl environment
 		curl_easy_cleanup(curl);
 	}
+	
+	return 0;
+}
+
+/**
+ * Store response in temporary file
+ * Use pre-processor directives to determine where to store
+ * response
+ */
+int store(MessageStruct response) {
+	
+	FILE* fp;
+	
+	// If on a UNIX system
+	#ifdef __unix__
+		fp = fopen("/tmp/prompter.tmp", "w+r");
+	// If being run from OS X
+	#elif defined __APPLE__
+		fp = fopen("/Library/Caches/prompter.tmp", "w+r");
+	#endif
+	
+	// If could open file, or create it, write to it
+	if (fp)
+		fprintf(fp, "%s", response.contents);
+	// if not, indicate failure
+	else 
+		return 1;
 	
 	return 0;
 }

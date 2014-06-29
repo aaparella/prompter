@@ -3,33 +3,21 @@
 #include <stdlib.h>
 #include <curl/curl.h>
 
-// Custom headers
 #include "parse.h"
 #include "get.h"
-
-
-void dispUsageGuide() {
-	printf("Usage : prompter [RSS feed URL]\n");
-	printf("This could use some flushing out");
-}
  
 int main(int argc, char* argv[]) {
 	
-	// Default URL
-	// <3 Topolsky
-	char* url = "http://www.theverge.com/rss/frontpage";
+	ArgumentStruct args;
+	args = parseArguments(argc, argv);
 
-	// Initialize response struct
+	char* url = args.url;
 	MessageStruct response;
-	response.size = 0;
-	response.contents = malloc(1);
-
-	// If a URL has been provided
-	if (argc != 1)
-		url = argv[1];	
-
-	get(&response, url);
-	printf("%s", response.contents);	
+	
+	if(get(&response, url))
+		printf("Error in performing CURL");
+	if(store(response))
+		printf("Error writing response to file");
 	
 	return 0;
 }
