@@ -1,3 +1,9 @@
+# Object files / executables
 *.out
 *.o
+
+# Debugging directory
+*.dSYM/
+
+# Executable
 prompter
