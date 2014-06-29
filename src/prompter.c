@@ -1,24 +1,35 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <curl/curl.h>
 
+// Custom headers
+#include "parse.h"
+#include "get.h"
+
+
+void dispUsageGuide() {
+	printf("Usage : prompter [RSS feed URL]\n");
+	printf("This could use some flushing out");
+}
+ 
 int main(int argc, char* argv[]) {
 	
-	CURL* curl;  
-	CURLcode res;
-  
-	
-	curl = curl_easy_init();
-	if (curl) {
-		curl_easy_setopt(curl, CURLOPT_URL, argv[1]);
-		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-		
-		res = curl_easy_perform(curl);
-		// if(res != CURLE_OK)
-		// 	fprintf(stderr, "curl_easy_perform() failed: %s\n",
-		// 		curl_easy_strerror(res));
-				
-		curl_easy_cleanup(curl);
-	}
+	// Default URL
+	// <3 Topolsky
+	char* url = "http://www.theverge.com/rss/frontpage";
+
+	// Initialize response struct
+	MessageStruct response;
+	response.size = 0;
+	response.contents = malloc(1);
+
+	// If a URL has been provided
+	if (argc != 1)
+		url = argv[1];	
+
+	get(&response, url);
+	printf("%s", response.contents);	
 	
 	return 0;
 }
