@@ -11,4 +11,4 @@ get : get.c get.h
 	gcc -g -c -lcurl get.c
 
 clean :
-	rm prompter
+	rm prompter *.o

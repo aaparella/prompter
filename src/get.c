@@ -11,8 +11,13 @@ static size_t write_data(void *response, size_t size, size_t nmemb, MessageStruc
 	message->contents = realloc(message->contents, message->size + responseSize + 1);
 
 	// Copy in response at end of message
-	memcpy(message->contents + message->size, response, responseSize);
-
+	if (message->contents)
+		memcpy(message->contents + message->size, response, responseSize);
+	else {
+		printf("Reallocation failed");
+		return -1;
+	}
+	
 	// Update message size and null terminate
 	message->size += responseSize;
 	message->contents[message->size] = 0; // null terminate message
@@ -30,10 +35,10 @@ int get(MessageStruct* response, char* url) {
 	
 	if (curl) {
 		// Set curl options
-		curl_easy_setopt(curl, CURLOPT_URL, url);					// Specify URL
-		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);			// Follow redirects
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);			// Specify container
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);	// Specify callback function
+		curl_easy_setopt(curl, CURLOPT_URL, url);                     // Specify URL
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);           // Follow redirects
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);          // Specify container
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);    // Specify callback function
 		
 		// Perform curl command	
 		res = curl_easy_perform(curl);
