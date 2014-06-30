@@ -8,16 +8,21 @@
  
 int main(int argc, char* argv[]) {
 	
-	ArgumentStruct args;
+	ArgumentStruct* args;
 	args = parseArguments(argc, argv);
 
-	char* url = args.url;
 	MessageStruct response;
 	
-	if(get(&response, url))
+	if(get(&response, args->url))
 		printf("Error in performing CURL");
-	if(store(response))
-		printf("Error writing response to file");
+		
+	if (!args->stdout) {
+		if(store(response))
+			printf("Error writing response to file");
+	}
+	else 
+		printf("%s", response.contents);
 	
+	free(args);
 	return 0;
 }
