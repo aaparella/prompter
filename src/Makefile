@@ -1,14 +1,24 @@
-prompter : prompter.c
-	gcc -g -Wall -c prompter.c
+TARGET = prompter
+LIBS = -lcurl -lxml2 -lm
+CC = gcc
+CFLAGS = -g -Wall -I/usr/include/libxml2
+RM = rm -f
 
-parse : parse.h parse.c
-	gcc -Wall -g -c -I/usr/include/libxml2 parse.c -lxml2
+.PHONY: default all clean
 
-get : get.c get.h
-	gcc -g  -Wall -c -lcurl get.c
-	
-all : prompter.o parse.o get.o
-	gcc -Wall -I/usr/include/libxml2 -o prompter prompter.o parse.o get.o -lxml2 -lcurl
+default: $(TARGET)
+all: default
 
-clean :
-	rm prompter *.o
+OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
+
+%.o : %.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PRECIOUS: $(TARGET) $(OBJECTS)
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(OBJECTS) -Wall -g $(LIBS) -o $@
+
+clean:
+	$(RM) $(OBJECTS)
+	$(RM) $(TARGET)
