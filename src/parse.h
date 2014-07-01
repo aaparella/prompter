@@ -8,6 +8,6 @@
 	
 	ArgumentStruct* getDefaultArguments();                  // Initialize default arguments
 	ArgumentStruct* parseArguments(int argc, char* argv[]); // parse command line arguments
-	int parseFeed();                                       // parse RSS data
-
+	void parseFeed();                                       // parse RSS data
+	
 #endif

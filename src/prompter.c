@@ -28,12 +28,13 @@ int main(int argc, char* argv[]) {
 		printf("Error in performing CURL");
 	
 	// Write out result to file if needed		
-	if (!args->stdout) {
+	if (!args->stdout)
 		if(store(response))
 			printf("Error writing response to file");
-	}
 	else 
-		printf("%s", response.contents);
+	 	printf("%s", response.contents);
+	
+	parseFeed();
 	
 	// Args is dynamically allocated, free it!
 	free(args);

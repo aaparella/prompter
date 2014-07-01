@@ -11,7 +11,7 @@ ArgumentStruct* getDefaultArguments() {
 	ArgumentStruct* defaults = malloc(sizeof(ArgumentStruct));
 	
 	defaults->url = "http://www.theverge.com/rss/frontpage";
-	defaults->stdout = 1;
+	defaults->stdout = 0;
 	
 	return defaults;
 }
@@ -32,4 +32,40 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
 	return args;	
 }
 
-int parseFeed();
+/**
+ * Parse individual story
+ * Internal use only, not in header
+ */
+void parseStory(xmlDocPtr doc, xmlNodePtr cur) {
+	// Stub
+}
+
+/**
+ * Parse through feed XML using libxml2 library
+ * Extensively commented for educational purposes
+ */
+void parseFeed() {
+	// Doc -> points to the root XML element
+	// Cur -> points to current XML element
+	xmlDocPtr doc;
+	xmlNodePtr cur;
+	
+	// Parse file
+	doc = xmlReadFile("/Library/Caches/prompter.tmp", NULL, XML_PARSE_RECOVER);
+	
+	// doc is null if file could not be parsed
+	if (doc) {
+		cur = xmlDocGetRootElement(doc);
+		
+		// Because we got root, descend one level
+		if (cur)
+			cur = cur->xmlChildrenNode;
+			
+		while(cur) {	
+			if (!xmlStrcmp(cur->name, (xmlChar *) "entry"))
+				parseStory(doc, cur);
+				
+			cur = cur->next;	
+		}
+	}
+}
