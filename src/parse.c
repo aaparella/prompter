@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <libxml/xmlreader.h>
 #include "parse.h"
 
 
