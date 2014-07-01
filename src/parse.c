@@ -36,8 +36,22 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
  * Parse individual story
  * Internal use only, not in header
  */
-void parseStory(xmlDocPtr doc, xmlNodePtr cur) {
-	// Stub
+void parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
+	// Extract basic information from each story
+	xmlNodePtr cur = storyRoot->xmlChildrenNode;
+	xmlChar* key;
+	
+	// While we have subelements to go through
+	while(cur) {
+		// Example : If we find the article title
+		if (!xmlStrcmp(cur->name, (xmlChar *) "title")) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			printf("article title : %s\n", key);
+			xmlFree(key);
+		}
+		
+		cur = cur->next;
+	}
 }
 
 /**
