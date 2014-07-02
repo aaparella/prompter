@@ -15,8 +15,8 @@
 	} ArticleStruct;
 	
 	ArgumentStruct* getDefaultArguments();                  // Initialize default arguments
-	ArgumentStruct* parseArguments(int argc, char* argv[]); // parse command line arguments
-	void parseFeed();                             // parse RSS data
+	ArgumentStruct* parseArguments(int argc, char* argv[]); // Parse command line arguments
+	void parseFeed();                                       // Parse RSS data
 	void printArticle(ArticleStruct* article);              // Display contents of article
 	
 #endif
