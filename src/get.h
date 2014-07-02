@@ -7,7 +7,7 @@
 		size_t size;
 	} MessageStruct;
 	
-	int get(MessageStruct* message, char* url); // Send get HTTP request to specified URL
-	int store(MessageStruct message);           // Store message contents to temp file
+	int get(MessageStruct* message, char* url);       // Send get HTTP request to specified URL
+	int store(MessageStruct message, char* filepath); // Store message contents to temp file
 		
 #endif

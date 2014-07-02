@@ -73,17 +73,9 @@ int get(MessageStruct* response, char* url) {
  * Use pre-processor directives to determine where to store
  * response
  */
-int store(MessageStruct response) {
+int store(MessageStruct response, char* filepath) {
 	
-	FILE* fp;
-	
-	// If on a UNIX system
-	#ifdef __unix__
-		fp = fopen("/tmp/prompter.tmp", "w+r");
-	// If being run from OS X
-	#elif defined __APPLE__
-		fp = fopen("/Library/Caches/prompter.tmp", "w+r");
-	#endif
+	FILE* fp = fopen(filepath, "w+r");
 	
 	// If could open file, or create it, write to it
 	if (fp)

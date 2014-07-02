@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 	
 	// Write out result to file if needed		
 	if (!args->stdout) {
-		if(store(response))
+		if(store(response, args->storagePath))
 			printf("Error writing response to file");
 	}
 	else 
