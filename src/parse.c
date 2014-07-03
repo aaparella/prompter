@@ -4,6 +4,14 @@
 #include <libxml/xmlreader.h>
 #include "parse.h"
 
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
 
 /**
  * Assign default argument values
@@ -140,9 +148,9 @@ void displayArticle(ArticleStruct* article) {
 	// If non-null, print each non-null field
 	if (article) {
 		if (article->title)
-			printf("%s\n", article->title);
+			printf("%s%s\n", KGRN, article->title);
 		if (article->published)
-			printf("%s\n", article->published);
+			printf("%s%s%s\n", KYEL, article->published, KNRM);
 		if (article->author)
 			printf("%s\n", article->author);	
 	}
