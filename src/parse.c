@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <libxml/xmlreader.h>
+#include <sys/ioctl.h>
 #include "parse.h"
 
 #define KNRM  "\x1B[0m"
@@ -51,6 +52,15 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
 	return args;	
 }
 
+/** 
+ * Parse conents of a story
+ * Have to handle the special HTML tags specially
+ */
+char* parseContent(xmlDocPtr doc, xmlNodePtr contentRoot) {
+	xmlChar* rawStory = xmlNodeListGetString(doc, contentRoot->xmlChildrenNode, 1);
+	return (char *) rawStory;
+}
+
 /**
  * Parse individual story
  * Internal use only, not in header
@@ -83,6 +93,10 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
 			else if (!xmlStrcmp(cur->name, (xmlChar *) "published")) {
 				article->published = malloc(strlen((char *) key));
 				strcpy(article->published, (char *) key);
+			}
+			else if (!xmlStrcmp(cur->name, (xmlChar *) "content")) {
+				// Because HTML elements are in the story, parse it specially
+				article->story = parseContent(doc, cur);
 			}
 			// If it's the author, descend a level and find name
 			else if (!xmlStrcmp(cur->name, (xmlChar *) "author")) {
@@ -134,7 +148,9 @@ void freeArticle(ArticleStruct* article) {
 		if (article->author)
 			free(article->author);
 		if (article->published)
-			free(article->published);		
+			free(article->published);	
+		if (article->story)	
+			free(article->story);
 		
 		free(article);
 	}
@@ -153,6 +169,8 @@ void displayArticle(ArticleStruct* article) {
 			printf("%s%s%s\n", KYEL, article->published, KNRM);
 		if (article->author)
 			printf("%s\n", article->author);	
+		if (article->story)
+			printf("%s\n", article->story);
 	}
 	
 	printf("\n");
