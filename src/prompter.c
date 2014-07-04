@@ -11,7 +11,8 @@
 #include <stdlib.h>
 #include <curl/curl.h>
 
-#include "parse.h"
+#include "argparse.h"
+#include "feedparse.h"
 #include "get.h"
  
 int main(int argc, char* argv[]) {
@@ -25,13 +26,13 @@ int main(int argc, char* argv[]) {
 	
 	// Get RSS feed from server
 	if(get(&response, args->url)) {
-		printf("Error in performing CURL");
+		printf("Error in performing CURL\n");
 		return 1;
 	}
 
 	// Write result out to file	
 	if(store(response, args->storagePath)) {
-		printf("Error writing response to file");
+		printf("Error writing response to file\n");
 		return 1;
 	}
 	

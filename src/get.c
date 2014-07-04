@@ -18,7 +18,7 @@ static size_t write_data(void *response, size_t size, size_t nmemb, MessageStruc
 	if (message->contents)
 		memcpy(message->contents + message->size, response, responseSize);
 	else {
-		printf("Reallocation failed");
+		printf("Reallocation failed\n");
 		return -1;
 	}
 	
@@ -79,7 +79,7 @@ int store(MessageStruct response, char* filepath) {
 	
 	// If could open file, or create it, write to it
 	if (fp)
-		fprintf(fp, "%s", response.contents);
+		fprintf(fp, "%s\n", response.contents);
 	// if not, indicate failure
 	else 
 		return 1;
