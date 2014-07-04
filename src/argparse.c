@@ -45,7 +45,10 @@ void displayUsage() {
 
 	printf("-h --help:\n");
 	printf("\tDisplay this menu\n");
-
+	
+	printf("-v --version:\n");
+	printf("\tDisplay current version number\n");
+	
 	exit(0);
 }
 
@@ -70,6 +73,13 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
 			args->stdout = 0;
 		else if (!strcmp("-n", argv[i]) || !strcmp("--number", argv[i]))
 			args->articleCount = atoi(argv[++i]);
+		else if (!strcmp("-v", argv[i]) || !strcmp("--version", argv[i])) {
+			printf("Prompter 0.0.1\n");
+			if (args)
+				free(args);
+			
+			exit(0);
+		}
 		// Only other option is either -h or an invalid option
 		// In either case, displayUsage() is called
 		else
