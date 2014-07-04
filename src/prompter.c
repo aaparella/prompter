@@ -15,8 +15,6 @@
 #include "get.h"
  
 int main(int argc, char* argv[]) {
-
-	displayUsage();
 	
 	// Parse command line arguments, use defaults when needed
 	ArgumentStruct* args;
@@ -26,18 +24,21 @@ int main(int argc, char* argv[]) {
 	MessageStruct response;
 	
 	// Get RSS feed from server
-	if(get(&response, args->url))
+	if(get(&response, args->url)) {
 		printf("Error in performing CURL");
-	
-	// Write out result to file if needed		
-	if (!args->stdout) {
-		if(store(response, args->storagePath))
-			printf("Error writing response to file");
+		return 1;
 	}
-	else 
-	 	printf("%s", response.contents);
+
+	// Write result out to file	
+	if(store(response, args->storagePath)) {
+		printf("Error writing response to file");
+		return 1;
+	}
 	
-	parseFeed();
+	// Write contents to display if needed
+	if (args->stdout)
+		parseFeed(args);
+
 	
 	// Args is dynamically allocated, free it!
 	free(args);

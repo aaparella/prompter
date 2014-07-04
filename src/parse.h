@@ -2,9 +2,10 @@
 	#define PARSE_H
 
 	typedef struct {
-		char* url;  // RSS feed URL
-		char* storagePath;
-		int stdout; // Write result to stdout or not
+		char* url;          // RSS feed URL
+		char* storagePath;  // Where to write temp files
+		int stdout;         // Write result to stdout or not
+		int articleCount;   // Number of articles to display
 	} ArgumentStruct;
 	
 	typedef struct {
@@ -18,7 +19,7 @@
 	
 	ArgumentStruct* getDefaultArguments();                  // Initialize default arguments
 	ArgumentStruct* parseArguments(int argc, char* argv[]); // Parse command line arguments
-	void parseFeed();                                       // Parse RSS data
+	void parseFeed(ArgumentStruct* args);                   // Parse RSS data
 	void printArticle(ArticleStruct* article);              // Display contents of article
 	
 #endif

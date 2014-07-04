@@ -53,7 +53,7 @@ ArgumentStruct* getDefaultArguments() {
 		defaults->storagePath = "/Library/Caches/prompter.tmp";
 	#endif
 	
-	defaults->stdout = 0;
+	defaults->stdout = 1;
 	
 	return defaults;
 }
@@ -68,8 +68,21 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
 	ArgumentStruct* args;
 	args = getDefaultArguments();
 	
-	// Read through options provided
-	// Yeah okay whatever I'll get to this eventually
+	// Run through each option
+	// For each flag, next item listed should be the desired value
+	// Will add error checking eventually
+	for (int i = 1; i < argc; i++) {
+		if (!strcmp("-f", argv[i]) || !strcmp("--feed", argv[i]))
+			args->url = argv[++i];
+		else if (!strcmp("-s", argv[i]) || !strcmp("--silent", argv[i]))
+			args->stdout = 0;
+		else if (!strcmp("-n", argv[i]) || !strcmp("--number", argv[i]))
+			args->articleCount = atoi(argv[++i]);
+		// Only other option is either -h or an invalid option
+		// In either case, displayUsage() is called
+		else
+			displayUsage();
+	}
 	
 	return args;	
 }
@@ -202,7 +215,7 @@ void displayArticle(ArticleStruct* article) {
  * Parse through feed XML using libxml2 library
  * Extensively commented for educational purposes
  */
-void parseFeed() {
+void parseFeed(ArgumentStruct* args) {
 	// Doc -> points to the root XML element
 	// Cur -> points to current XML element
 	xmlDocPtr doc;
