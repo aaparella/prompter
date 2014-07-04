@@ -14,6 +14,8 @@
 		char* story;
 	} ArticleStruct;
 	
+	void displayUsage();                                    // Display usage guidelines and quit
+	
 	ArgumentStruct* getDefaultArguments();                  // Initialize default arguments
 	ArgumentStruct* parseArguments(int argc, char* argv[]); // Parse command line arguments
 	void parseFeed();                                       // Parse RSS data

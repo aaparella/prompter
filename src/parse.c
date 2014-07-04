@@ -15,6 +15,28 @@
 #define KWHT  "\x1B[37m"
 
 /**
+ * Display program usage guide
+ * Also exits program, indicates success to OS
+ */
+void displayUsage() {
+	printf("Usage : prompter {OPTION}\n\n");
+	
+	printf("-s --silent:\n");
+	printf("\tOnly update, do not output results\n");
+	
+	printf("-n --number\n");
+	printf("\tSpecify number of articles to output\n");
+	
+	printf("-f --feed\n");
+	printf("\tURL feed to use, defaults to previous URL\n");
+	
+	printf("-h --help\n");
+	printf("\tDisplay this menu\n");
+	
+	exit(0);
+}
+ 
+/**
  * Assign default argument values
  */
 ArgumentStruct* getDefaultArguments() {

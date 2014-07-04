@@ -38,7 +38,7 @@ int get(MessageStruct* response, char* url) {
 	
 	CURL* curl;  
 	CURLcode res;
-	
+		
 	// Initialize response
 	response->size = 0;
 	response->contents = malloc(1);

@@ -15,6 +15,8 @@
 #include "get.h"
  
 int main(int argc, char* argv[]) {
+
+	displayUsage();
 	
 	// Parse command line arguments, use defaults when needed
 	ArgumentStruct* args;
