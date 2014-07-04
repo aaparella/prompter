@@ -11,12 +11,18 @@ prompter {OPTION}
 
 -s --silent:
 	Only update, do not output results
+	
 -n --number:
 	Only display specified number of articles
+	
 -f --feed:
 	URL feed to use, defaults to previous URL
+	
 -h --help:
 	Display this menu
+
+-v --version:
+	Display current version number
 	
 Requirements
 ===
