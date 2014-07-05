@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     }
     
     // Write result out to file	
-    if(store(response, args->storagePath)) {
+    if(storeFeed(response, args->dataFile, args->tempDirectory)) {
         printf("Error writing response to file\n");
         return 1;
     }

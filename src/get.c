@@ -2,6 +2,8 @@
 #include <curl/curl.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+
 #include "get.h"
 
 /**
@@ -73,9 +75,15 @@ int get(MessageStruct* response, char* url) {
  * Use pre-processor directives to determine where to store
  * response
  */
-int store(MessageStruct response, char* filepath) {
+int storeFeed(MessageStruct response, char* filepath, char* directory) {
 	
     FILE* fp = fopen(filepath, "w+r");
+    
+    // Problem opening file, try to create it
+    if (!fp) {
+        mkdir(directory, S_IRWXU);
+        fp = fopen(filepath, "w+r");
+    }
 	
     // If could open file, or create it, write to it
     if (fp)

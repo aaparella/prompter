@@ -11,17 +11,21 @@ ArgumentStruct* getDefaultArguments() {
     ArgumentStruct* defaults = malloc(sizeof(ArgumentStruct));
     
     defaults->url = "http://www.theverge.com/rss/frontpage";
-    defaults->storagePath = NULL;
+    defaults->tempDirectory = NULL;
     
     // If on a UNIX system
     #ifdef __unix__
-        defaults->storagePath = "/tmp/prompter.tmp";
+        defaults->tempDirectory = "/tmp/prompter";
+        defaults->settingsFile  = "/tmp/prompter/settings.txt";
+        defaults->dataFile      = "/tmp/prompter/data.txt";
     // If being run from OS X
     #elif defined __APPLE__
-        defaults->storagePath = "/Library/Caches/prompter.tmp";
+        defaults->tempDirectory = "/Library/Caches/prompter";
+        defaults->settingsFile  = "/Library/Caches/prompter/settings.txt";
+        defaults->dataFile      = "/Library/Caches/prompter/data.txt";
     #endif
-    
-    defaults->stdout = 1;
+
+    defaults->stdout       = 1;
     
     return defaults;
 }
@@ -87,4 +91,15 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
     }
     
     return args;	
+}
+
+/**
+ * Store arguments used for this execution
+ * Creates file if it does not already exis
+ */
+int storeArgs(ArgumentStruct* args; char* filepath, char* directory) {
+    
+    // Still to be written
+    
+    return 0;
 }
