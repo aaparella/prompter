@@ -3,7 +3,7 @@
  * Author : Alexander Parella        *
  * CLI RSS feed reader, source       *
  * available at github.com/aaparella *
- * Usage : prompter -help            *
+ * Usage : prompter --help           *
  +************************************/
 
 #include <stdio.h>
