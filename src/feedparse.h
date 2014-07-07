@@ -11,6 +11,5 @@
     } ArticleStruct;
     
     void parseFeed(ArgumentStruct* args);                   // Parse RSS data
-    void printArticle(ArticleStruct* article);              // Display contents of article
 
 #endif

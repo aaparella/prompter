@@ -124,7 +124,7 @@ void freeArticle(ArticleStruct* article) {
 /**
  * Display article's contents
  */
-void displayArticle(ArticleStruct* article) {
+void displayArticleColor(ArticleStruct* article) {
 	
     // If non-null, print each non-null field
     if (article) {
@@ -134,8 +134,27 @@ void displayArticle(ArticleStruct* article) {
                 printf("%s%s%s\n", KYEL, article->published, KNRM);
             if (article->author)
                 printf("%s\n", article->author);	
-            if (article->story)
-                printf("%s\n", article->story);
+            // if (article->story)
+            //     printf("%s\n", article->story);
+    }
+    
+    printf("\n");
+}
+
+/** 
+ * Display article's contents with no color
+ */
+void displayArticleNoColor(ArticleStruct* article) {
+    // If non-null, print each non-null field
+    if (article) {
+        if (article->title)
+                printf("%s\n", article->title);
+            if (article->published)
+                printf("%s\n", article->published);
+            if (article->author)
+                printf("%s\n", article->author);	
+            // if (article->story)
+            //     printf("%s\n", article->story);
     }
     
     printf("\n");
@@ -151,27 +170,42 @@ void parseFeed(ArgumentStruct* args) {
     xmlDocPtr doc;
     xmlNodePtr cur;
     
+    // Keep track of number of articles
+    int articlesToPrint = args->articleCount;
+    int printAll = 0;
+
+    if (articlesToPrint == -1)
+        printAll = 1;
+    
     // Parse file
-    doc = xmlReadFile("/Library/Caches/prompter.tmp", NULL, XML_PARSE_RECOVER);
+    doc = xmlReadFile(args->dataFile, NULL, XML_PARSE_RECOVER);
     
     // doc is null if file could not be parsed
     if (doc) {
     // Get the root of the parse tree
         cur = xmlDocGetRootElement(doc);
     
-    // Because we got tree root, descend one level
-    if (cur)
-        cur = cur->xmlChildrenNode;
-        
-        while(cur) {	
-            // If we find a story, parse it, display it, and free the object
-            if (!xmlStrcmp(cur->name, (xmlChar *) "entry")) {
-                ArticleStruct* article = parseStory(doc, cur);
-                displayArticle(article);
-                freeArticle(article);
-            }
+        // Because we got tree root, descend one level
+        if (cur) {
+            cur = cur->xmlChildrenNode;
             
-            cur = cur->next;	
+            while(cur && (articlesToPrint || printAll)) {	
+
+                // If we find a story, parse it, display it, and free the object
+                if (!xmlStrcmp(cur->name, (xmlChar *) "entry")) {
+                    ArticleStruct* article = parseStory(doc, cur);
+                    
+                    if (args->color)
+                        displayArticleColor(article);
+                    else
+                        displayArticleNoColor(article);
+                        
+                    freeArticle(article);
+                    articlesToPrint--;
+                }
+                
+                cur = cur->next;	
+            }
         }
     }
 }
