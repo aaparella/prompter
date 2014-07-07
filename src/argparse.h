@@ -7,6 +7,7 @@
         char* settingsFile;   // Where to write settings
         char* dataFile;       // Where to write data
         int stdout;           // Write result to stdout or not
+        int color;            // Output in color or not
         int articleCount;     // Number of articles to display
     } ArgumentStruct;
 	

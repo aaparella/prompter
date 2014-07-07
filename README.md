@@ -12,8 +12,11 @@ prompter {OPTION}
 -s --silent:
 	Only update, do not output results
 	
--n --number:
-	Only display specified number of articles
+-n --nocolor:
+	Display articles without color
+	
+-d --display:
+	Display only the specified number of articles
 	
 -f --feed:
 	URL feed to use, defaults to previous URL
