@@ -26,8 +26,9 @@ ArgumentStruct* getDefaultArguments() {
     #endif
 
     defaults->stdout       = 1;
-    defaults->color        = 1;
-    defaults->articleCount = -1;
+    defaults->color        = 1;  // Default to have color
+    defaults->articleCount = -1; // Default to printing all articles
+    defaults->update       = 1;  // Default to fetching new content
     
     return defaults;
 }
@@ -48,6 +49,9 @@ void displayUsage() {
 
     printf("-n --nocolor:\n");
     printf("\tDo not use color for output\n");
+    
+    printf("-o --offline:\n");
+    printf("\tDo not fetch new content\n");
 
     printf("-f --feed:\n");
     printf("\tURL feed to use, defaults to previous URL\n");
@@ -80,6 +84,8 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
             args->url = argv[++i];
         else if (!strcmp("-s", argv[i]) || !strcmp("--silent", argv[i]))
             args->stdout = 0;
+        else if (!strcmp("-o", argv[i]) || !strcmp("--offline", argv[i]))
+            args->update = 0;
         else if (!strcmp("-d", argv[i]) || !strcmp("--display", argv[i]))
             args->articleCount = atoi(argv[++i]);
         else if (!strcmp("-n", argv[i]) || !strcmp("--nocolor", argv[i]))

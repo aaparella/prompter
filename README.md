@@ -18,6 +18,9 @@ prompter {OPTION}
 -d --display:
 	Display only the specified number of articles
 	
+-o --offline:
+	Do not update article contents
+	
 -f --feed:
 	URL feed to use, defaults to previous URL
 	

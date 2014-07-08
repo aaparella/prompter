@@ -25,15 +25,17 @@ int main(int argc, char* argv[]) {
     MessageStruct response;
     
     // Get RSS feed from server
-    if(get(&response, args->url)) {
-        printf("Error in performing CURL\n");
-        return 1;
-    }
+    if (args->update) {
+        if(get(&response, args->url)) {
+            printf("Error in performing CURL\n");
+            return 1;
+        }
     
-    // Write result out to file	
-    if(storeFeed(response, args->dataFile, args->tempDirectory)) {
-        printf("Error writing response to file\n");
-        return 1;
+        // Write result out to file
+        if(storeFeed(response, args->dataFile, args->tempDirectory)) {
+            printf("Error writing response to file\n");
+            return 1;
+        }
     }
     
     // Write contents to display if needed

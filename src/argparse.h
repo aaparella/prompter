@@ -6,9 +6,11 @@
         char* tempDirectory;  // Where to write temp files
         char* settingsFile;   // Where to write settings
         char* dataFile;       // Where to write data
+        
         int stdout;           // Write result to stdout or not
         int color;            // Output in color or not
         int articleCount;     // Number of articles to display
+        int update;           // Get new content
     } ArgumentStruct;
 	
     void displayUsage();                                                 // Display usage guidelines and quit
