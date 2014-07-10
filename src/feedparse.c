@@ -167,22 +167,19 @@ void displayArticleNoColor(ArticleStruct* article) {
  */
 void displayNCurses(ArticleStruct* article) {
     
-    // Initialize Ncurses window
-    initscr();
-    clear();			
-    
     // Print article contents to ncurses window
     if (article) {
         if (article->title)
-            mvprintw(0, 0, article->title);
+            // mvprintw(0, 0, article->title);
+            printw("%s\n", article->title);
         if (article->author)
-            mvprintw(1, 0, article->author);
+            // mvprintw(1, 0, article->author);
+            printw("%s\n", article->author);
         if (article->published)
-            mvprintw(2, 0, article->published);
+            // mvprintw(2, 0, article->published);
+            printw("%s\n\n", article->published);
     }	
     refresh();			
-    getch();			
-    endwin();			
 }
 
 /**
@@ -194,6 +191,8 @@ void parseFeed(ArgumentStruct* args) {
     // Cur -> points to current XML element
     xmlDocPtr doc;
     xmlNodePtr cur;
+    
+    initscr();
     
     // Keep track of number of articles
     int articlesToPrint = args->articleCount;
@@ -235,4 +234,7 @@ void parseFeed(ArgumentStruct* args) {
             }
         }
     }
+    
+    getch();
+    endwin();			
 }
