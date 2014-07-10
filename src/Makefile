@@ -1,5 +1,5 @@
 TARGET = prompter
-LIBS = -lcurl -lxml2 -lm
+LIBS = -lcurl -lxml2 -lm -lncurses
 CC = gcc
 CFLAGS = -g -Wall -I/usr/include/libxml2
 RM = rm -f

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <libxml/xmlreader.h>
 #include <sys/ioctl.h>
+#include <curses.h>
+
 #include "feedparse.h"
 #include "argparse.h"
 
@@ -161,6 +163,29 @@ void displayArticleNoColor(ArticleStruct* article) {
 }
 
 /**
+ * Display article's contents using ncurses library
+ */
+void displayNCurses(ArticleStruct* article) {
+    
+    // Initialize Ncurses window
+    initscr();
+    clear();			
+    
+    // Print article contents to ncurses window
+    if (article) {
+        if (article->title)
+            mvprintw(0, 0, article->title);
+        if (article->author)
+            mvprintw(1, 0, article->author);
+        if (article->published)
+            mvprintw(2, 0, article->published);
+    }	
+    refresh();			
+    getch();			
+    endwin();			
+}
+
+/**
  * Parse through feed XML using libxml2 library
  * Extensively commented for educational purposes
  */
@@ -195,10 +220,12 @@ void parseFeed(ArgumentStruct* args) {
                 if (!xmlStrcmp(cur->name, (xmlChar *) "entry")) {
                     ArticleStruct* article = parseStory(doc, cur);
                     
-                    if (args->color)
-                        displayArticleColor(article);
-                    else
-                        displayArticleNoColor(article);
+                    displayNCurses(article);
+                    
+                    // if (args->color)
+                    //     displayArticleColor(article);
+                    // else
+                    //     displayArticleNoColor(article);
                         
                     freeArticle(article);
                     articlesToPrint--;

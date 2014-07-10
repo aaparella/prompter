@@ -33,7 +33,7 @@ prompter {OPTION}
 Requirements
 ===
 - OS : Linux, OS X
-- Dependencies : libxml2, libcurl
+- Dependencies : libxml2, libcurl, ncurses (All installed by default on majority of systems)
 
 
 
