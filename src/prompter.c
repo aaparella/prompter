@@ -39,9 +39,12 @@ int main(int argc, char* argv[]) {
     }
     
     // Write contents to display if needed
-    if (args->stdout)
-        parseFeed(args);
+    ArticleStruct** articles = NULL;
     
+    if (args->stdout)
+        articles = parseFeed(args);
+    
+    freeArticles(articles);
     
     // Args is dynamically allocated, free it!
     free(args);

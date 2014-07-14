@@ -10,6 +10,7 @@
         char* story;
     } ArticleStruct;
     
-    void parseFeed(ArgumentStruct* args);                   // Parse RSS data
+    ArticleStruct** parseFeed(ArgumentStruct* args);                   // Parse RSS data
+    void freeArticles(ArticleStruct** articles);
 
 #endif

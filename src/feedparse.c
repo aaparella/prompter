@@ -28,6 +28,7 @@ char* parseContent(xmlDocPtr doc, xmlNodePtr contentRoot) {
     return (char *) rawStory;
 }
 
+
 /**
  * Parse individual story
  * Internal use only, not in header
@@ -103,6 +104,7 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
     return article;
 }
 
+
 /**
  * Free dynamically allocated article
  */
@@ -123,6 +125,30 @@ void freeArticle(ArticleStruct* article) {
     }
 }
 
+
+/**
+ * Free dynamically allocated array of articles
+ */
+void freeArticles(ArticleStruct ** articles) {
+
+    if (articles) {
+        int index = 0;
+
+        while(1) {
+            if (articles[index])
+                break;
+
+            printf("Freeing article #%d\n", index + 1);
+            freeArticle(articles[index]);
+
+            index++;
+        }
+
+        free(articles);
+    }
+}
+
+
 /**
  * Display article's contents
  */
@@ -136,12 +162,13 @@ void displayArticleColor(ArticleStruct* article) {
                 printf("%s%s%s\n", KYEL, article->published, KNRM);
             if (article->author)
                 printf("%s\n", article->author);	
-            // if (article->story)
-            //     printf("%s\n", article->story);
+            if (article->story)
+                printf("%s\n", article->story);
     }
     
     printf("\n");
 }
+
 
 /** 
  * Display article's contents with no color
@@ -155,12 +182,13 @@ void displayArticleNoColor(ArticleStruct* article) {
                 printf("%s\n", article->published);
             if (article->author)
                 printf("%s\n", article->author);	
-            // if (article->story)
-            //     printf("%s\n", article->story);
+            if (article->story)
+                printf("%s\n", article->story);
     }
     
     printf("\n");
 }
+
 
 /**
  * Display article's contents using ncurses library
@@ -179,27 +207,34 @@ void displayNCurses(ArticleStruct* article) {
             // mvprintw(2, 0, article->published);
             printw("%s\n\n", article->published);
     }	
+    
     refresh();			
 }
+
 
 /**
  * Parse through feed XML using libxml2 library
  * Extensively commented for educational purposes
  */
-void parseFeed(ArgumentStruct* args) {
+ArticleStruct** parseFeed(ArgumentStruct* args) {
     // Doc -> points to the root XML element
     // Cur -> points to current XML element
     xmlDocPtr doc;
     xmlNodePtr cur;
-    
-    initscr();
-    
+        
     // Keep track of number of articles
-    int articlesToPrint = args->articleCount;
-    int printAll = 0;
-
-    if (articlesToPrint == -1)
+    int articlesToFetch = args->articleCount;
+    int printAll = 0, articleCount = 0, arraySize = 10;
+    
+    if (articlesToFetch == -1)
         printAll = 1;
+    
+    // Array of articles parsed out of feed
+    ArticleStruct** articles = malloc (5 * sizeof(ArticleStruct*));
+    for (int i = 0; i < 5; i++) {
+        articles[i] = malloc (sizeof(ArticleStruct));
+        articles[i] = NULL;
+    }
     
     // Parse file
     doc = xmlReadFile(args->dataFile, NULL, XML_PARSE_RECOVER);
@@ -213,28 +248,38 @@ void parseFeed(ArgumentStruct* args) {
         if (cur) {
             cur = cur->xmlChildrenNode;
             
-            while(cur && (articlesToPrint || printAll)) {	
+            while(cur && (articlesToFetch || printAll)) {	
 
-                // If we find a story, parse it, display it, and free the object
+                // If we find a story, parse it, add it to array
                 if (!xmlStrcmp(cur->name, (xmlChar *) "entry")) {
                     ArticleStruct* article = parseStory(doc, cur);
+                    articles[articleCount++] = article;
                     
-                    displayNCurses(article);
-                    
-                    // if (args->color)
-                    //     displayArticleColor(article);
-                    // else
-                    //     displayArticleNoColor(article);
+                    // Check if we have to resize
+                    if (articleCount == arraySize) {
+                        realloc(articles, sizeof(ArticleStruct*) * arraySize * 2);
+                        arraySize *= 2;
                         
-                    freeArticle(article);
-                    articlesToPrint--;
+                        // Allocate memory for all of the new articles
+                        for (int i = articleCount; i < arraySize; i++) {
+                            articles[i] = malloc(sizeof(ArticleStruct));
+                            articles[i] = NULL;
+                        }
+                    }
+                    
+                    // Feteched and article, update count
+                    articlesToFetch--;
                 }
                 
+                // Advance through XML tree
                 cur = cur->next;	
             }
         }
     }
     
-    getch();
-    endwin();			
+    for (int i = 0; i < articleCount; i++) {
+        printf("%s\n", articles[i]->title);
+    }
+        
+    return articles;
 }
