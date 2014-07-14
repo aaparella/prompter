@@ -118,8 +118,8 @@ void freeArticle(ArticleStruct* article) {
             free(article->author);
         if (article->published)
             free(article->published);	
-        if (article->story)	
-            free(article->story);
+        // if (article->story)	
+        //     free(article->story);
         
         free(article);
     }
@@ -231,10 +231,8 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
     
     // Array of articles parsed out of feed
     ArticleStruct** articles = malloc (arraySize * sizeof(ArticleStruct*));
-    for (int i = 0; i < arraySize; i++) {
-        articles[i] = malloc (sizeof(ArticleStruct));
+    for (int i = 0; i < arraySize; i++)
         articles[i] = NULL;
-    }
     
     // Parse file
     doc = xmlReadFile(args->dataFile, NULL, XML_PARSE_RECOVER);
@@ -261,10 +259,8 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
                         arraySize *= 2;
                         
                         // Allocate memory for all of the new articles
-                        for (int i = articleCount; i < arraySize; i++) {
-                            articles[i] = malloc(sizeof(ArticleStruct));
+                        for (int i = articleCount; i < arraySize; i++)
                             articles[i] = NULL;
-                        }
                     }
                     
                     // Feteched and article, update count
