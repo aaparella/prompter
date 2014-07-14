@@ -38,11 +38,9 @@ int main(int argc, char* argv[]) {
         }
     }
     
-    // Write contents to display if needed
+    // Create array of article sturctures
     ArticleStruct** articles = NULL;
-    
-    if (args->stdout)
-        articles = parseFeed(args);
+    articles = parseFeed(args);
     
     freeArticles(articles);
     

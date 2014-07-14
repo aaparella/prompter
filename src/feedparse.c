@@ -230,8 +230,8 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
         printAll = 1;
     
     // Array of articles parsed out of feed
-    ArticleStruct** articles = malloc (5 * sizeof(ArticleStruct*));
-    for (int i = 0; i < 5; i++) {
+    ArticleStruct** articles = malloc (arraySize * sizeof(ArticleStruct*));
+    for (int i = 0; i < arraySize; i++) {
         articles[i] = malloc (sizeof(ArticleStruct));
         articles[i] = NULL;
     }
