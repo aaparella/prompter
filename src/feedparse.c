@@ -17,7 +17,10 @@
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 
-
+#define TITLE_COLOR 1
+#define AUTHOR_COLOR 2
+#define STORY_COLOR 3
+#define MENU_COLOR 4
 
 /** 
  * Parse conents of a story
@@ -200,14 +203,14 @@ void displayNCurses(ArticleStruct* article) {
     
     if (article) {
         if (article->title) {
-            attron(COLOR_PAIR(1));
+            attron(COLOR_PAIR(TITLE_COLOR));
             printw("%s\n", article->title);
-            attroff(COLOR_PAIR(1));
+            attroff(COLOR_PAIR(TITLE_COLOR));
         }
         if (article->author) {
-            attron(COLOR_PAIR(2));
+            attron(COLOR_PAIR(AUTHOR_COLOR));
             printw("%s\n", article->author);
-            attroff(COLOR_PAIR(2));
+            attroff(COLOR_PAIR(AUTHOR_COLOR));
         }
         if (article->published) {
             printw("%s\n\n", article->published);
@@ -228,14 +231,14 @@ void displayFeed(ArticleStruct** articles) {
     initscr();
     start_color();
     
-    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_WHITE, COLOR_BLACK);
-    init_pair(4, COLOR_BLUE, COLOR_BLACK);
+    init_pair(TITLE_COLOR, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(AUTHOR_COLOR, COLOR_GREEN, COLOR_BLACK);
+    init_pair(STANDARD_COLOR, COLOR_WHITE, COLOR_BLACK);
+    init_pair(MENU_COLOR, COLOR_BLUE, COLOR_BLACK);
     
     while(1) {
         
-        attron(COLOR_PAIR(3));
+        attron(COLOR_PAIR(MENU_COLOR));
         clear();
         
         if (articles) {
@@ -244,10 +247,10 @@ void displayFeed(ArticleStruct** articles) {
             while(articles[index]) {  
   
                 if (articles[index]->unread)
-                    attron(COLOR_PAIR(4));
+                    attron(COLOR_PAIR(STANDARD_COLOR));
                       
                 printw("%2d : %s\n", index + 1, articles[index]->title);
-                attron(COLOR_PAIR(3));
+                attron(COLOR_PAIR(MENU_COLOR));
                 
                 index++;
             }
@@ -263,7 +266,7 @@ void displayFeed(ArticleStruct** articles) {
         articles[option-1]->unread = 0;
     }
     
-    attroff(COLOR_PAIR(3));
+    attroff(COLOR_PAIR(MENU_COLOR));
     clear();
     refresh();
 }
