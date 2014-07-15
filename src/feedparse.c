@@ -138,7 +138,6 @@ void freeArticles(ArticleStruct ** articles) {
             if (!articles[index]) 
                 break;
 
-            printf("Freeing article #%d\n", index + 1);
             freeArticle(articles[index]);
 
             index++;
@@ -196,19 +195,68 @@ void displayArticleNoColor(ArticleStruct* article) {
 void displayNCurses(ArticleStruct* article) {
     
     // Print article contents to ncurses window
+    clear();
+    
     if (article) {
-        if (article->title)
-            // mvprintw(0, 0, article->title);
+        if (article->title) {
+            attron(COLOR_PAIR(1));
             printw("%s\n", article->title);
-        if (article->author)
-            // mvprintw(1, 0, article->author);
+            attroff(COLOR_PAIR(1));
+        }
+        if (article->author) {
+            attron(COLOR_PAIR(2));
             printw("%s\n", article->author);
-        if (article->published)
-            // mvprintw(2, 0, article->published);
+            attroff(COLOR_PAIR(2));
+        }
+        if (article->published) {
             printw("%s\n\n", article->published);
+        }
     }	
     
-    refresh();			
+    refresh();	
+    getch();		
+}
+
+/**
+ * Display list of articles using ncurses library
+ */
+void displayFeed(ArticleStruct** articles) {
+    
+    int option = 1;
+    
+    initscr();
+    start_color();
+    
+    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);
+    init_pair(3, COLOR_WHITE, COLOR_BLACK);
+    
+    while(1) {
+        
+        attron(COLOR_PAIR(3));
+        clear();
+        
+        if (articles) {
+            int index = 0;
+            
+            while(articles[index]) {                
+                printw("%2d : %s\n", index + 1, articles[index]->title);
+                index++;
+            }
+        }
+        
+        refresh();
+        scanw("%d", &option);
+    
+        if (option == 0)
+            break;
+        
+        displayNCurses(articles[option-1]);
+    }
+    
+    attroff(COLOR_PAIR(1));
+    clear();
+    refresh();
 }
 
 
@@ -273,8 +321,7 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
         }
     }
     
-    for (int i = 0; i < articleCount; i++)
-        printf("%s\n", articles[i]->title);
+    displayFeed(articles);
         
     return articles;
 }
