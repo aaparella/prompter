@@ -135,7 +135,7 @@ void freeArticles(ArticleStruct ** articles) {
         int index = 0;
 
         while(1) {
-            if (articles[index])
+            if (!articles[index]) 
                 break;
 
             printf("Freeing article #%d\n", index + 1);
@@ -239,7 +239,7 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
     
     // doc is null if file could not be parsed
     if (doc) {
-    // Get the root of the parse tree
+        // Get the root of the parse tree
         cur = xmlDocGetRootElement(doc);
     
         // Because we got tree root, descend one level
@@ -255,7 +255,7 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
                     
                     // Check if we have to resize
                     if (articleCount == arraySize) {
-                        realloc(articles, sizeof(ArticleStruct*) * arraySize * 2);
+                        articles = realloc(articles, sizeof(ArticleStruct*) * arraySize * 2);
                         arraySize *= 2;
                         
                         // Allocate memory for all of the new articles
@@ -273,9 +273,8 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
         }
     }
     
-    for (int i = 0; i < articleCount; i++) {
+    for (int i = 0; i < articleCount; i++)
         printf("%s\n", articles[i]->title);
-    }
         
     return articles;
 }
