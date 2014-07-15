@@ -8,6 +8,8 @@
         char* author;
         char* title;
         char* story;
+        
+        int unread;
     } ArticleStruct;
     
     ArticleStruct** parseFeed(ArgumentStruct* args);                   // Parse RSS data

@@ -44,6 +44,7 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
     article->author    = NULL;
     article->published = NULL;
     article->story     = NULL;
+    article->unread    = 1;
     
     // While we have subelements to go through
     while(cur) {
@@ -230,6 +231,7 @@ void displayFeed(ArticleStruct** articles) {
     init_pair(1, COLOR_YELLOW, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     init_pair(3, COLOR_WHITE, COLOR_BLACK);
+    init_pair(4, COLOR_BLUE, COLOR_BLACK);
     
     while(1) {
         
@@ -239,8 +241,14 @@ void displayFeed(ArticleStruct** articles) {
         if (articles) {
             int index = 0;
             
-            while(articles[index]) {                
+            while(articles[index]) {  
+  
+                if (articles[index]->unread)
+                    attron(COLOR_PAIR(4));
+                      
                 printw("%2d : %s\n", index + 1, articles[index]->title);
+                attron(COLOR_PAIR(3));
+                
                 index++;
             }
         }
@@ -252,9 +260,10 @@ void displayFeed(ArticleStruct** articles) {
             break;
         
         displayNCurses(articles[option-1]);
+        articles[option-1]->unread = 0;
     }
     
-    attroff(COLOR_PAIR(1));
+    attroff(COLOR_PAIR(3));
     clear();
     refresh();
 }
