@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <libxml/xmlreader.h>
 #include <sys/ioctl.h>
 #include <curses.h>
@@ -216,6 +217,9 @@ void displayNCurses(ArticleStruct* article) {
         if (article->published) {
             printw("%s\n\n", article->published);
         }
+        if (article->story) {
+            printw("\n%s\n", article->story);
+        }
     }	
     
     refresh();	
@@ -227,16 +231,20 @@ void displayNCurses(ArticleStruct* article) {
  */
 void displayFeed(ArticleStruct** articles) {
     
-    int option = 1;
+    int option = 1, index = 0;
     
     initscr();
     start_color();
+    
+    struct winsize window;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
+    
     
     // Set up ncurses color pairs
     init_pair(TITLE_COLOR, COLOR_YELLOW, COLOR_BLACK);
     init_pair(AUTHOR_COLOR, COLOR_GREEN, COLOR_BLACK);
     init_pair(STANDARD_COLOR, COLOR_WHITE, COLOR_BLACK);
-    init_pair(MENU_COLOR, COLOR_BLUE, COLOR_BLACK);
+    init_pair(MENU_COLOR, COLOR_CYAN, COLOR_BLACK);
     
     while(1) {
         
@@ -245,7 +253,7 @@ void displayFeed(ArticleStruct** articles) {
         clear();
         
         if (articles) {
-            int index = 0;
+            index = 0;
             
             // While we have an article to print
             while(articles[index]) {  
@@ -264,10 +272,12 @@ void displayFeed(ArticleStruct** articles) {
             }
         }
         
-        refresh();
-        
         attroff(COLOR_PAIR(MENU_COLOR));
         attron(COLOR_PAIR(STANDARD_COLOR));
+           
+        mvprintw(window.ws_row - 1, 0, "Selection > ");   
+        refresh();
+         
         scanw("%d", &option);
     
         if (option == 0)
