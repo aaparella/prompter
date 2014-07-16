@@ -41,25 +41,25 @@ ArgumentStruct* getDefaultArguments() {
 void displayUsage() {
     printf("Usage : prompter {OPTION}\n\n");
 
-    printf("-s --silent:\n");
+    printf("-s --silent:");
     printf("\tOnly update, do not output results\n");
 
-    printf("-d --display:\n");
+    printf("-d --display:");
     printf("\tSpecify number of articles to output\n");
 
-    printf("-n --nocolor:\n");
+    printf("-n --nocolor:");
     printf("\tDo not use color for output\n");
     
-    printf("-o --offline:\n");
+    printf("-o --offline:");
     printf("\tDo not fetch new content\n");
 
-    printf("-f --feed:\n");
+    printf("-f --feed:");
     printf("\tURL feed to use, defaults to previous URL\n");
 
-    printf("-h --help:\n");
+    printf("-h --help:");
     printf("\tDisplay this menu\n");
 	
-    printf("-v --version:\n");
+    printf("-v --version:");
     printf("\tDisplay current version number\n");
 	
     exit(0);
