@@ -21,6 +21,7 @@
 #define AUTHOR_COLOR 2
 #define STORY_COLOR 3
 #define MENU_COLOR 4
+#define STANDARD_COLOR 5
 
 /** 
  * Parse conents of a story
@@ -231,6 +232,7 @@ void displayFeed(ArticleStruct** articles) {
     initscr();
     start_color();
     
+    // Set up ncurses color pairs
     init_pair(TITLE_COLOR, COLOR_YELLOW, COLOR_BLACK);
     init_pair(AUTHOR_COLOR, COLOR_GREEN, COLOR_BLACK);
     init_pair(STANDARD_COLOR, COLOR_WHITE, COLOR_BLACK);
@@ -238,18 +240,24 @@ void displayFeed(ArticleStruct** articles) {
     
     while(1) {
         
+        // Set menu color
         attron(COLOR_PAIR(MENU_COLOR));
         clear();
         
         if (articles) {
             int index = 0;
             
+            // While we have an article to print
             while(articles[index]) {  
   
-                if (articles[index]->unread)
+                // If it's already read then change the color back to standard
+                if (!articles[index]->unread)
                     attron(COLOR_PAIR(STANDARD_COLOR));
-                      
+                  
+                // Print out title
                 printw("%2d : %s\n", index + 1, articles[index]->title);
+                
+                // Restore color
                 attron(COLOR_PAIR(MENU_COLOR));
                 
                 index++;
@@ -257,6 +265,9 @@ void displayFeed(ArticleStruct** articles) {
         }
         
         refresh();
+        
+        attroff(COLOR_PAIR(MENU_COLOR));
+        attron(COLOR_PAIR(STANDARD_COLOR));
         scanw("%d", &option);
     
         if (option == 0)
