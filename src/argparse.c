@@ -23,6 +23,10 @@ ArgumentStruct* getDefaultArguments() {
         defaults->tempDirectory = "/Library/Caches/prompter";
         defaults->settingsFile  = "/Library/Caches/prompter/settings.txt";
         defaults->dataFile      = "/Library/Caches/prompter/data.txt";
+    #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+        defaults->tempDirectory = "C:\WINDOWS\TEMP\prompter";
+        defaults->settingsFile  = "C:\WINDOWS\TEMP\prompter\settings.txt";
+        defaults->dataFile      = "C:\WINDOWS\TEMP\prompter\data.txt";
     #endif
 
     defaults->stdout       = 1;
