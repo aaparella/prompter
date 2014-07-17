@@ -42,8 +42,8 @@ ArgumentStruct* getDefaultArguments() {
  * Display program usage guide
  * Also exits program, indicates success to OS
  */
-void displayUsage() {
-    printf("Usage : prompter {OPTION}\n\n");
+void displayUsage(char** argv) {
+    printf("Usage : %s {OPTION}\n\n", argv[0]);
 
     printf("-s --silent:");
     printf("\tOnly update, do not output results\n");
@@ -95,7 +95,7 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
         else if (!strcmp("-n", argv[i]) || !strcmp("--nocolor", argv[i]))
             args->color = 0;
         else if (!strcmp("-v", argv[i]) || !strcmp("--version", argv[i])) {
-            printf("Prompter 0.0.1\n");
+            printf("%s 0.0.1\n", argv[0]);
             if (args)
                 free(args);
         
@@ -104,7 +104,7 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
         // Only other option is either -h or an invalid option
         // In either case, displayUsage() is called
         else
-            displayUsage();
+            displayUsage(argv);
     }
     
     return args;	
