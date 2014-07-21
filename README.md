@@ -2,6 +2,8 @@ prompter
 ========
 Command Line RSS reader - v 0.0.1
 
+![Prompter screen shot](screenshots/mainmenu.png)
+
 Provide RSS URL as only argument. Defaults to RSS feed from theverge.com. Coming features include color output, live updating.
 
 Usage
