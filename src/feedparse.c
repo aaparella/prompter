@@ -9,15 +9,6 @@
 #include "feedparse.h"
 #include "argparse.h"
 
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
-
 #define TITLE_COLOR 1
 #define AUTHOR_COLOR 2
 #define STORY_COLOR 3
@@ -31,6 +22,12 @@
 char* parseContent(xmlDocPtr doc, xmlNodePtr contentRoot) {
     xmlChar* rawStory = xmlNodeListGetString(doc, contentRoot->xmlChildrenNode, 1);
     return (char *) rawStory;
+}
+
+
+void PrintBar(struct winsize window) {
+    for (int i = 0; i < window.ws_col; i++)
+        printw("=");
 }
 
 
@@ -155,55 +152,16 @@ void freeArticles(ArticleStruct ** articles) {
 
 
 /**
- * Display article's contents
- */
-void displayArticleColor(ArticleStruct* article) {
-	
-    // If non-null, print each non-null field
-    if (article) {
-        if (article->title)
-                printf("%s%s\n", KGRN, article->title);
-            if (article->published)
-                printf("%s%s%s\n", KYEL, article->published, KNRM);
-            if (article->author)
-                printf("%s\n", article->author);	
-            if (article->story)
-                printf("%s\n", article->story);
-    }
-    
-    printf("\n");
-}
-
-
-/** 
- * Display article's contents with no color
- */
-void displayArticleNoColor(ArticleStruct* article) {
-    // If non-null, print each non-null field
-    if (article) {
-        if (article->title)
-                printf("%s\n", article->title);
-            if (article->published)
-                printf("%s\n", article->published);
-            if (article->author)
-                printf("%s\n", article->author);	
-            if (article->story)
-                printf("%s\n", article->story);
-    }
-    
-    printf("\n");
-}
-
-
-/**
  * Display article's contents using ncurses library
  */
-void displayNCurses(ArticleStruct* article) {
+void displayNCurses(ArticleStruct* article, struct winsize window) {
     
     // Print article contents to ncurses window
     clear();
     
     if (article) {
+        PrintBar(window);
+        
         if (article->title) {
             attron(COLOR_PAIR(TITLE_COLOR));
             printw("%s\n", article->title);
@@ -215,8 +173,11 @@ void displayNCurses(ArticleStruct* article) {
             attroff(COLOR_PAIR(AUTHOR_COLOR));
         }
         if (article->published) {
-            printw("%s\n\n", article->published);
+            printw("%s\n", article->published);
         }
+        
+        PrintBar(window);
+        
         if (article->story) {
             printw("\n%s\n", article->story);
         }
@@ -225,6 +186,7 @@ void displayNCurses(ArticleStruct* article) {
     refresh();	
     getch();		
 }
+
 
 /**
  * Display list of articles using ncurses library
@@ -252,6 +214,11 @@ void displayFeed(ArticleStruct** articles) {
         attron(COLOR_PAIR(MENU_COLOR));
         clear();
         
+        // Output heading
+        PrintBar(window);
+        printw("Prompter v 0.0.1\n");
+        PrintBar(window);
+
         if (articles) {
             index = 0;
             
@@ -263,7 +230,7 @@ void displayFeed(ArticleStruct** articles) {
                     attron(COLOR_PAIR(STANDARD_COLOR));
                   
                 // Print out title
-                printw("%2d : %s\n", index + 1, articles[index]->title);
+                printw("%3d : %s\n", index + 1, articles[index]->title);
                 
                 // Restore color
                 attron(COLOR_PAIR(MENU_COLOR));
@@ -274,16 +241,21 @@ void displayFeed(ArticleStruct** articles) {
         
         attroff(COLOR_PAIR(MENU_COLOR));
         attron(COLOR_PAIR(STANDARD_COLOR));
-           
-        mvprintw(window.ws_row - 1, 0, "Selection > ");   
+        
+        move(window.ws_row - 2, 0);
+        PrintBar(window);
+        
+        // Prompt for selection and read it in
+        printw("Selection (0 to quit) > ");   
         refresh();
          
         scanw("%d", &option);
     
+        // When selection is 0 exit
         if (option == 0)
             break;
         
-        displayNCurses(articles[option-1]);
+        displayNCurses(articles[option-1], window);
         articles[option-1]->unread = 0;
     }
     
