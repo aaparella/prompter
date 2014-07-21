@@ -25,6 +25,10 @@ char* parseContent(xmlDocPtr doc, xmlNodePtr contentRoot) {
 }
 
 
+/**
+ * Print horizontal bar
+ * No need for newline, as it goes to the end of the window and wraps around
+ */
 void PrintBar(struct winsize window) {
     for (int i = 0; i < window.ws_col; i++)
         printw("=");
@@ -108,47 +112,6 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
 }
 
 
-/**
- * Free dynamically allocated article
- */
-void freeArticle(ArticleStruct* article) {
-
-    // If non-null, free each allocated field
-    if (article) {
-        if (article->title)
-            free(article->title);
-        if (article->author)
-            free(article->author);
-        if (article->published)
-            free(article->published);	
-        // if (article->story)	
-        //     free(article->story);
-        
-        free(article);
-    }
-}
-
-
-/**
- * Free dynamically allocated array of articles
- */
-void freeArticles(ArticleStruct ** articles) {
-
-    if (articles) {
-        int index = 0;
-
-        while(1) {
-            if (!articles[index]) 
-                break;
-
-            freeArticle(articles[index]);
-
-            index++;
-        }
-
-        free(articles);
-    }
-}
 
 
 /**
@@ -229,8 +192,13 @@ void displayFeed(ArticleStruct** articles) {
                 if (!articles[index]->unread)
                     attron(COLOR_PAIR(STANDARD_COLOR));
                   
-                // Print out title
-                printw("%3d : %s\n", index + 1, articles[index]->title);
+                // Print out title                
+                if (strlen(articles[index]->title) < window.ws_col - 6)
+                    // If the title will fit in full, display it
+                    printw("%3d : %s\n", index + 1, articles[index]->title);
+                else 
+                    // If not, print out the part that will fit and an ellipsis
+                    printw("%3d : %.*s...\n", index + 1, window.ws_col - 10, articles[index]->title);
                 
                 // Restore color
                 attron(COLOR_PAIR(MENU_COLOR));
@@ -262,6 +230,49 @@ void displayFeed(ArticleStruct** articles) {
     attroff(COLOR_PAIR(MENU_COLOR));
     clear();
     refresh();
+}
+
+
+/**
+ * Free dynamically allocated article
+ */
+void freeArticle(ArticleStruct* article) {
+
+    // If non-null, free each allocated field
+    if (article) {
+        if (article->title)
+            free(article->title);
+        if (article->author)
+            free(article->author);
+        if (article->published)
+            free(article->published);	
+        // if (article->story)	
+        //     free(article->story);
+
+        free(article);
+    }
+}
+
+
+/**
+ * Free dynamically allocated array of articles
+ */
+void freeArticles(ArticleStruct ** articles) {
+
+    if (articles) {
+        int index = 0;
+
+        while(1) {
+            if (!articles[index]) 
+                break;
+
+            freeArticle(articles[index]);
+
+            index++;
+        }
+
+        free(articles);
+    }
 }
 
 
