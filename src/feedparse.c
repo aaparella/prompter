@@ -21,6 +21,10 @@
  */
 char* parseContent(xmlDocPtr doc, xmlNodePtr contentRoot) {
     xmlChar* rawStory = xmlNodeListGetString(doc, contentRoot->xmlChildrenNode, 1);
+    
+    // Parse HTML by hand
+    // Oh joy
+     
     return (char *) rawStory;
 }
 
