@@ -202,7 +202,8 @@ void displayFeed(ArticleStruct** articles) {
                     printw("%3d : %s\n", index + 1, articles[index]->title);
                 else 
                     // If not, print out the part that will fit and an ellipsis
-                    printw("%3d : %.*s...\n", index + 1, window.ws_col - 10, articles[index]->title);
+                    printw("%3d : %.*s...\n", \
+                        index + 1, window.ws_col - 10, articles[index]->title);
                 
                 // Restore color
                 attron(COLOR_PAIR(MENU_COLOR));
@@ -323,7 +324,8 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
                     
                     // Check if we have to resize
                     if (articleCount == arraySize) {
-                        articles = realloc(articles, sizeof(ArticleStruct*) * arraySize * 2);
+                        articles = realloc( \
+                            articles, sizeof(ArticleStruct*) * arraySize * 2);
                         arraySize *= 2;
                         
                         // Allocate memory for all of the new articles
