@@ -14,8 +14,10 @@
 #include "argparse.h"
 #include "feedparse.h"
 #include "get.h"
+#include "stack.h"
  
 int main(int argc, char* argv[]) {
+	
 	
     // Parse command line arguments, use defaults when needed
     ArgumentStruct* args;
