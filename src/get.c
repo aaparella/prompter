@@ -91,6 +91,8 @@ int storeFeed(MessageStruct response, char* filepath, char* directory) {
     // if not, indicate failure
     else 
         return 1;
+        
+    fclose(fp);
 	
     return 0;
 }
