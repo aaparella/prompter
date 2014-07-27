@@ -18,7 +18,6 @@
  
 int main(int argc, char* argv[]) {
 	
-	
     // Parse command line arguments, use defaults when needed
     ArgumentStruct* args;
     args = parseArguments(argc, argv);
