@@ -83,7 +83,7 @@ char* popElement(Stack* stack) {
  * Return top element of the stack without popping it
  */
 char* topElement(Stack* stack) {
-    if(stack) {
+    if(stack)
         if (stack->elements && stack->count != 0)
             return stack->elements[stack->count - 1];
 
