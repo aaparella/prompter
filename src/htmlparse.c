@@ -17,6 +17,7 @@ int hasContent(char* content) {
 char* ParseHtml(char* html) {
     
     char* story = (char *) malloc(sizeof(char));
+    story[0] = '\0';
     // Stack* stack = getNewStack();
     
     char* content = strsep(&html, "<");
@@ -44,14 +45,13 @@ char* ParseHtml(char* html) {
                 
             // Concatenate the two together and null terminate the string
             strcat(story, content);
-            // story[strlen(story)] = '\0';
+            story[strlen(story)] = '\0';
                 
             // Get properties of next tag
             properties = strsep(&html, ">");
         }
     }
     
-    printf("%s\n", story);
     return story;
 }
 

@@ -70,11 +70,13 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
             if (!xmlStrcmp(cur->name, (xmlChar *) "title")) {
                 article->title = malloc(strlen((char *) key));
                 strcpy(article->title, (char *) key);
+                // article->published[strlen((char *) key)] = '\0';
             }
             // Check if it was the published timestamp
             else if (!xmlStrcmp(cur->name, (xmlChar *) "published")) {
                 article->published = malloc(strlen((char *) key));
                 strcpy(article->published, (char *) key);
+                // article->published[strlen((char *) key)] = '\0';
             }
             else if (!xmlStrcmp(cur->name, (xmlChar *) "content")) {
                 // Because HTML elements are in the story, parse it specially
@@ -94,6 +96,7 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
                         if (!xmlStrcmp(temp->name, (xmlChar *) "name")) {
                             article->author = malloc(strlen((char *) tempKey));
                             strcpy(article->author, (char *) tempKey);
+                            // article->published[strlen((char *) tempKey)] = '\0';
                         }
                     }
                     
@@ -254,8 +257,8 @@ void freeArticle(ArticleStruct* article) {
             free(article->author);
         if (article->published)
             free(article->published);	
-        // if (article->story)	
-        //     free(article->story);
+        if (article->story)	
+            free(article->story);
 
         free(article);
     }
@@ -345,6 +348,6 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
             }
         }
     }
-            
+ 
     return articles;
 }
