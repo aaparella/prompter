@@ -1,6 +1,6 @@
 #ifndef HTMLPARSE_H
     #define HTMLPARSE_H
     
-    void ParseHtml(char* html);
+    char* ParseHtml(char* html);
     
 #endif
