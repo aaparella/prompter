@@ -8,6 +8,7 @@
 
 #include "feedparse.h"
 #include "argparse.h"
+#include "htmlparse.h"
 
 #define TITLE_COLOR 1
 #define AUTHOR_COLOR 2
@@ -21,6 +22,12 @@
  */
 char* parseContent(xmlDocPtr doc, xmlNodePtr contentRoot) {
     xmlChar* rawStory = xmlNodeListGetString(doc, contentRoot->xmlChildrenNode, 1);
+    
+    
+    rawStory = (xmlChar *) ParseHtml((char *) rawStory);
+    // Parse HTML by hand
+    // Oh joy
+     
     return (char *) rawStory;
 }
 
@@ -63,11 +70,13 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
             if (!xmlStrcmp(cur->name, (xmlChar *) "title")) {
                 article->title = malloc(strlen((char *) key));
                 strcpy(article->title, (char *) key);
+                // article->published[strlen((char *) key)] = '\0';
             }
             // Check if it was the published timestamp
             else if (!xmlStrcmp(cur->name, (xmlChar *) "published")) {
                 article->published = malloc(strlen((char *) key));
                 strcpy(article->published, (char *) key);
+                // article->published[strlen((char *) key)] = '\0';
             }
             else if (!xmlStrcmp(cur->name, (xmlChar *) "content")) {
                 // Because HTML elements are in the story, parse it specially
@@ -87,6 +96,7 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
                         if (!xmlStrcmp(temp->name, (xmlChar *) "name")) {
                             article->author = malloc(strlen((char *) tempKey));
                             strcpy(article->author, (char *) tempKey);
+                            // article->published[strlen((char *) tempKey)] = '\0';
                         }
                     }
                     
@@ -198,7 +208,8 @@ void displayFeed(ArticleStruct** articles) {
                     printw("%3d : %s\n", index + 1, articles[index]->title);
                 else 
                     // If not, print out the part that will fit and an ellipsis
-                    printw("%3d : %.*s...\n", index + 1, window.ws_col - 10, articles[index]->title);
+                    printw("%3d : %.*s...\n", \
+                        index + 1, window.ws_col - 10, articles[index]->title);
                 
                 // Restore color
                 attron(COLOR_PAIR(MENU_COLOR));
@@ -246,8 +257,8 @@ void freeArticle(ArticleStruct* article) {
             free(article->author);
         if (article->published)
             free(article->published);	
-        // if (article->story)	
-        //     free(article->story);
+        if (article->story)	
+            free(article->story);
 
         free(article);
     }
@@ -319,7 +330,8 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
                     
                     // Check if we have to resize
                     if (articleCount == arraySize) {
-                        articles = realloc(articles, sizeof(ArticleStruct*) * arraySize * 2);
+                        articles = realloc( \
+                            articles, sizeof(ArticleStruct*) * arraySize * 2);
                         arraySize *= 2;
                         
                         // Allocate memory for all of the new articles
@@ -336,8 +348,6 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
             }
         }
     }
-    
-    displayFeed(articles);
-        
+ 
     return articles;
 }

@@ -14,6 +14,7 @@
 #include "argparse.h"
 #include "feedparse.h"
 #include "get.h"
+#include "stack.h"
  
 int main(int argc, char* argv[]) {
 	
@@ -41,6 +42,9 @@ int main(int argc, char* argv[]) {
     // Create array of article sturctures
     ArticleStruct** articles = NULL;
     articles = parseFeed(args);
+    
+    // Display feed
+    displayFeed(articles);
     
     freeArticles(articles);
     
