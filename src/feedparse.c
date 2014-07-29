@@ -24,7 +24,7 @@ char* parseContent(xmlDocPtr doc, xmlNodePtr contentRoot) {
     xmlChar* rawStory = xmlNodeListGetString(doc, contentRoot->xmlChildrenNode, 1);
     
     
-    ParseHtml((char *) rawStory);
+    rawStory = (xmlChar *) ParseHtml((char *) rawStory);
     // Parse HTML by hand
     // Oh joy
      
@@ -345,8 +345,6 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
             }
         }
     }
-    
-    // displayFeed(articles);
-        
+            
     return articles;
 }

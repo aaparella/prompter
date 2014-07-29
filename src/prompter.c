@@ -43,6 +43,9 @@ int main(int argc, char* argv[]) {
     ArticleStruct** articles = NULL;
     articles = parseFeed(args);
     
+    // Display feed
+    displayFeed(articles);
+    
     freeArticles(articles);
     
     // Args is dynamically allocated, free it!
