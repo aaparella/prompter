@@ -9,7 +9,7 @@
     
     Stack* getNewStack();
     void freeStack();
-    char* addElement(Stack* stack, char* element);
+    char* push(Stack* stack, char* element);
     char* popElement(Stack* stack);
     char* topElement(Stack* stack);
     

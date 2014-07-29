@@ -8,6 +8,7 @@
 
 #include "feedparse.h"
 #include "argparse.h"
+#include "htmlparse.h"
 
 #define TITLE_COLOR 1
 #define AUTHOR_COLOR 2
@@ -22,6 +23,8 @@
 char* parseContent(xmlDocPtr doc, xmlNodePtr contentRoot) {
     xmlChar* rawStory = xmlNodeListGetString(doc, contentRoot->xmlChildrenNode, 1);
     
+    
+    ParseHtml((char *) rawStory);
     // Parse HTML by hand
     // Oh joy
      
@@ -343,7 +346,7 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
         }
     }
     
-    displayFeed(articles);
+    // displayFeed(articles);
         
     return articles;
 }

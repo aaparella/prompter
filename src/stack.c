@@ -37,7 +37,7 @@ void freeStack(Stack* stack) {
 /**
  * Add element to top of stack
  */
-char* addElement(Stack* stack, char* element) {
+char* push(Stack* stack, char* element) {
     
     // Initialize via the constructor
     // Could initialize here, but would be very ugly
