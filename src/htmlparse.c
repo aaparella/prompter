@@ -41,14 +41,10 @@ int isSingletonTag(char * tag) {
 int tagCompare(char* openingTag, char* closingTag) {
     
     printf("Comparing %s and %s\n", openingTag, closingTag);
-    if (strncmp(openingTag, closingTag + 1, strlen(closingTag) - 1)) {
-        printf("They are not equal!\n");
+    if (strncmp(openingTag, closingTag + 1, strlen(closingTag) - 1))
         return 0;
-    }
-    else {
-        printf("They are equal!\n");
+    else
         return 1;
-    }
 }
 
 
@@ -56,8 +52,6 @@ int tagCompare(char* openingTag, char* closingTag) {
  * Parse HTML page
  */
 char* ParseHtml(char* html) {
-    
-    printf("%s\n", html);
     
     char* story = (char *) malloc(sizeof(char));
     Stack* stack = getNewStack();
@@ -112,7 +106,6 @@ char* ParseHtml(char* html) {
         }
     }
     
-    printf("Done parsing\n");
     return story;
 }
 
