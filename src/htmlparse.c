@@ -6,6 +6,9 @@
 #include "stack.h"
 
 
+/**
+ * Check if the content is anything other than whitespace
+ */
 int hasContent(char* content) {
     for (int i = 0; i < strlen(content); i++) 
         if ((content[i] != ' ') && (content[i] != '\t'))
@@ -14,25 +17,82 @@ int hasContent(char* content) {
     return 0;
 }
 
+
+/**
+ * Check if the tag has an accompanying closing tag
+ */
+int isSingletonTag(char * tag) {
+    // If <tag ... />
+    if (tag[strlen(tag) - 1] == '/')
+        return 1;
+    // If tag is hr or br
+    else if (!strncmp("br", tag, 2) || !strncmp("hr", tag, 2))
+        return 1;
+    
+    return 0;
+}
+
+
+
+/**
+ * Return 1 if the two tags are of the same type
+ * Return 0 if the two tags are of different types
+ */
+int tagCompare(char* openingTag, char* closingTag) {
+    
+    printf("Comparing %s and %s\n", openingTag, closingTag);
+    if (strncmp(openingTag, closingTag + 1, strlen(closingTag) - 1)) {
+        printf("They are not equal!\n");
+        return 0;
+    }
+    else {
+        printf("They are equal!\n");
+        return 1;
+    }
+}
+
+
+/**
+ * Parse HTML page
+ */
 char* ParseHtml(char* html) {
     
-    char* story = (char *) malloc(sizeof(char));
-    story[0] = '\0';
-    // Stack* stack = getNewStack();
+    printf("%s\n", html);
     
+    char* story = (char *) malloc(sizeof(char));
+    Stack* stack = getNewStack();
+    
+    // Prime remainder of algorithm
     char* content = strsep(&html, "<");
     
     if (content) {
+        // Chew threw first tag contents
         char* properties = strsep(&html, ">");
         
         while(properties) {
             
-            // Needs fleshing out
-            // Will ultimately need to be used in order to validate HTML
-            // Also needed ot control presentation
-            // if (properties[strlen(properties) - 1] != '/')
-            //     push(stack, properties);
-
+            // If this evaluates to false, tag is a singleton, and can be ignored
+            if (!isSingletonTag(properties)) {
+                // Opening tag
+                if (properties[0] != '/')
+                    // Push this tag onto the stack
+                    push(stack, properties);
+                // Closing tag
+                else {
+                    // Get the last opening tag
+                    char* openingTag = popElement(stack);
+                    
+                    // Make comparison, must be equal or else HTML is invalid
+                    if (openingTag) {
+                        if (!tagCompare(openingTag, properties)) {
+                            // Free story and return error message
+                            free(story);    
+                            return "Story not parsed correctly. Sorry :(";
+                        }
+                    }
+                }
+            }
+            
             // Find content
             content = strsep(&html, "<");
 
@@ -52,6 +112,7 @@ char* ParseHtml(char* html) {
         }
     }
     
+    printf("Done parsing\n");
     return story;
 }
 
