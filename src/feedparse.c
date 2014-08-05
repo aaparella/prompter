@@ -16,17 +16,14 @@
 #define MENU_COLOR 4
 #define STANDARD_COLOR 5
 
+
 /** 
  * Parse conents of a story
  * Have to handle the special HTML tags specially
  */
 char* parseContent(xmlDocPtr doc, xmlNodePtr contentRoot) {
     xmlChar* rawStory = xmlNodeListGetString(doc, contentRoot->xmlChildrenNode, 1);
-    
-    
     rawStory = (xmlChar *) ParseHtml((char *) rawStory);
-    // Parse HTML by hand
-    // Oh joy
      
     return (char *) rawStory;
 }
@@ -164,16 +161,18 @@ void displayNCurses(ArticleStruct* article, struct winsize window) {
 /**
  * Display list of articles using ncurses library
  */
-void displayFeed(ArticleStruct** articles) {
+void displayArticles(ArticleStruct** articles, int articleCount) {
     
+    // Initialize variables
     int option = 1, index = 0;
     
+    // Initialize ncurses display
     initscr();
     start_color();
     
+    // Get terminal window information / dimensions
     struct winsize window;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
-    
     
     // Set up ncurses color pairs
     init_pair(TITLE_COLOR, COLOR_YELLOW, COLOR_BLACK);
@@ -196,7 +195,7 @@ void displayFeed(ArticleStruct** articles) {
             index = 0;
             
             // While we have an article to print
-            while(articles[index]) {  
+            while(index < articleCount) {  
   
                 // If it's already read then change the color back to standard
                 if (!articles[index]->unread)
@@ -227,20 +226,38 @@ void displayFeed(ArticleStruct** articles) {
         // Prompt for selection and read it in
         printw("Selection (0 to quit) > ");   
         refresh();
-         
+        
+        // Read in new selection until we get a valid selection
         scanw("%d", &option);
+        while(option < 0 || option > articleCount) {
+            mvprintw(window.ws_row - 1, 0, "Invalid selection. New selection (0 to quit) > ");
+            scanw("%d", &option);
+        }
     
         // When selection is 0 exit
         if (option == 0)
             break;
         
+        // Display specified article and mark it as read
         displayNCurses(articles[option-1], window);
         articles[option-1]->unread = 0;
     }
     
+    // Clear screen
     attroff(COLOR_PAIR(MENU_COLOR));
     clear();
     refresh();
+}
+
+
+/**
+ * Display feed
+ */
+void displayFeed(RSSFeed* feed) {
+    if (feed->articles && feed->articleCount)
+        displayArticles(feed->articles, feed->articleCount);
+    else
+        printf("No articles to display\n");
 }
 
 
@@ -268,22 +285,44 @@ void freeArticle(ArticleStruct* article) {
 /**
  * Free dynamically allocated array of articles
  */
-void freeArticles(ArticleStruct ** articles) {
+void freeArticles(ArticleStruct ** articles, int articleCount) {
 
     if (articles) {
-        int index = 0;
-
-        while(1) {
-            if (!articles[index]) 
-                break;
-
+        for (int index = 0; index < articleCount; index++)
             freeArticle(articles[index]);
-
-            index++;
-        }
 
         free(articles);
     }
+}
+
+
+
+/**
+ * Free dynamically allocated feed
+ */
+void freeFeed(RSSFeed* feed) {
+    if (feed) {
+        freeArticles(feed->articles, feed->articleCount);
+        free(feed->url);
+        free(feed);
+    }
+}
+
+
+/**
+ * Configure default RSSFeed struct
+ * Dynamically allocated
+ */
+RSSFeed* getNewFeed(ArgumentStruct* args) {
+    RSSFeed* feed = (RSSFeed *) malloc (sizeof(RSSFeed));
+    
+    feed->url = (char *) malloc(strlen(args->url) + 1);
+    strcpy(feed->url, args->url);
+    feed->url[strlen(args->url)] = 0;
+    
+    feed->articleCount = 0;
+    
+    return feed;
 }
 
 
@@ -291,12 +330,15 @@ void freeArticles(ArticleStruct ** articles) {
  * Parse through feed XML using libxml2 library
  * Extensively commented for educational purposes
  */
-ArticleStruct** parseFeed(ArgumentStruct* args) {
+RSSFeed* parseFeed(ArgumentStruct* args) {
     // Doc -> points to the root XML element
     // Cur -> points to current XML element
     xmlDocPtr doc;
     xmlNodePtr cur;
-        
+    
+    // Allocated RSS feed struct
+    RSSFeed* feed = getNewFeed(args);    
+    
     // Keep track of number of articles
     int articlesToFetch = args->articleCount;
     int printAll = 0, articleCount = 0, arraySize = 10;
@@ -349,5 +391,9 @@ ArticleStruct** parseFeed(ArgumentStruct* args) {
         }
     }
  
-    return articles;
+    // Copy values to feed structure
+    feed->articles = articles;
+    feed->articleCount = articleCount;
+    
+    return feed;
 }

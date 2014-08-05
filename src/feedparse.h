@@ -12,8 +12,15 @@
         int unread;
     } ArticleStruct;
     
-    ArticleStruct** parseFeed(ArgumentStruct* args);                   // Parse RSS data
-    void freeArticles(ArticleStruct** articles);
-    void displayFeed(ArticleStruct** articles);
-
+    
+    typedef struct {
+        ArticleStruct** articles;
+        int articleCount;
+        char* url;
+    } RSSFeed;
+    
+    
+    RSSFeed* parseFeed(ArgumentStruct* args);        // Prase RSS data
+    void displayFeed(RSSFeed* feed);                 // Display feed
+    void freeFeed(RSSFeed* feed);                    // Free feed
 #endif

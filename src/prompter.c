@@ -40,14 +40,14 @@ int main(int argc, char* argv[]) {
     }
     
     // Create array of article sturctures
-    ArticleStruct** articles = NULL;
-    articles = parseFeed(args);
+    RSSFeed* feed = NULL;
+    feed = parseFeed(args);
     
     // Display feed
-    displayFeed(articles);
+    displayFeed(feed);
     
     // Free dynamically allocated articles
-    freeArticles(articles);
+    freeFeed(feed);
     
     // Args is dynamically allocated, free it!
     free(args);
