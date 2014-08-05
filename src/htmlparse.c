@@ -1,20 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "htmlparse.h"
 #include "stack.h"
 
 
 /**
- * Check if the content is anything other than whitespace
+ * Remove leading whitespace of content
  */
-int hasContent(char* content) {
-    for (int i = 0; i < strlen(content); i++) 
-        if ((content[i] != ' ') && (content[i] != '\t'))
-            return 1;
-
-    return 0;
+char* trimWhiteSpace(char* content) {
+    content = strtok(content, " ");
+    
+    return (content ? content : "");
 }
 
 
@@ -39,12 +38,7 @@ int isSingletonTag(char * tag) {
  * Return 0 if the two tags are of different types
  */
 int tagCompare(char* openingTag, char* closingTag) {
-    
-    printf("Comparing %s and %s\n", openingTag, closingTag);
-    if (strncmp(openingTag, closingTag + 1, strlen(closingTag) - 1))
-        return 0;
-    else
-        return 1;
+    return !strncmp(openingTag, closingTag + 1, strlen(closingTag) - 1);
 }
 
 
@@ -98,6 +92,7 @@ char* ParseHtml(char* html) {
             }
                 
             // Concatenate the two together and null terminate the string
+            // content = trimWhiteSpace(content);
             strcat(story, content);
             story[strlen(story)] = '\0';
                 
