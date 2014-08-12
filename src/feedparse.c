@@ -161,7 +161,7 @@ void displayNCurses(ArticleStruct* article, struct winsize window) {
 /**
  * Display list of articles using ncurses library
  */
-void displayArticles(ArticleStruct** articles, int articleCount) {
+void displayArticles(ArticleStruct** articles, int articleCount, ArgumentStruct* args) {
     
     // Initialize variables
     int option = 1, index = 0;
@@ -188,7 +188,8 @@ void displayArticles(ArticleStruct** articles, int articleCount) {
         
         // Output heading
         PrintBar(window);
-        printw("Prompter v 0.0.1\n");
+        printw("Prompter v 0.0.1");
+        mvprintw(1, window.ws_col - 9 - strlen(args->url), "Source : %s", args->url);
         PrintBar(window);
 
         if (articles) {
@@ -253,9 +254,9 @@ void displayArticles(ArticleStruct** articles, int articleCount) {
 /**
  * Display feed
  */
-void displayFeed(RSSFeed* feed) {
+void displayFeed(RSSFeed* feed, ArgumentStruct* args) {
     if (feed->articles && feed->articleCount)
-        displayArticles(feed->articles, feed->articleCount);
+        displayArticles(feed->articles, feed->articleCount, args);
     else
         printf("No articles to display\n");
 }

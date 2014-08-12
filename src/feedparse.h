@@ -20,7 +20,7 @@
     } RSSFeed;
     
     
-    RSSFeed* parseFeed(ArgumentStruct* args);        // Prase RSS data
-    void displayFeed(RSSFeed* feed);                 // Display feed
-    void freeFeed(RSSFeed* feed);                    // Free feed
+    RSSFeed* parseFeed(ArgumentStruct* args);               // Prase RSS data
+    void displayFeed(RSSFeed* feed, ArgumentStruct* args);  // Display feed
+    void freeFeed(RSSFeed* feed);                           // Free feed
 #endif

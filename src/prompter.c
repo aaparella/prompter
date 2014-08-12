@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
     feed = parseFeed(args);
     
     // Display feed
-    displayFeed(feed);
+    displayFeed(feed, args);
     
     // Free dynamically allocated articles
     freeFeed(feed);
