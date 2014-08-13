@@ -118,7 +118,29 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
     return article;
 }
 
-
+/**
+ * Display the menu entry item for an article
+ */
+void displayMenuArticle(ArticleStruct* article, struct winsize window, int index) {
+    
+    // If it's already read then change the color back to standard
+    if (!article->unread)
+        attron(COLOR_PAIR(STANDARD_COLOR));
+    else
+        attron(COLOR_PAIR(MENU_COLOR));
+      
+    // Print out title                
+    if (strlen(article->title) < window.ws_col - 6)
+        // If the title will fit in full, display it
+        printw("%3d : %s\n", index, article->title);
+    else 
+        // If not, print out the part that will fit and an ellipsis
+        printw("%3d : %.*s...\n", \
+            index + 1, window.ws_col - 10, article->title);
+    
+    // Restore color
+    attron(COLOR_PAIR(STANDARD_COLOR));
+}
 
 
 /**
@@ -157,20 +179,15 @@ void displayNCurses(ArticleStruct* article, struct winsize window) {
     getch();		
 }
 
-
 /**
- * Display list of articles using ncurses library
+ * Initialize NCurses variables and screen, get window information
  */
-void displayArticles(ArticleStruct** articles, int articleCount, ArgumentStruct* args) {
-    
-    // Initialize variables
-    int option = 1, index = 0;
-    
-    // Initialize ncurses display
+struct winsize initializeNcurses() {
+    // Create ncurses screen
     initscr();
     start_color();
     
-    // Get terminal window information / dimensions
+    // Get information about terminal window
     struct winsize window;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &window);
     
@@ -180,60 +197,81 @@ void displayArticles(ArticleStruct** articles, int articleCount, ArgumentStruct*
     init_pair(STANDARD_COLOR, COLOR_WHITE, COLOR_BLACK);
     init_pair(MENU_COLOR, COLOR_CYAN, COLOR_BLACK);
     
+    return window;
+}
+
+/**
+ * Display header of article view page
+ */
+void displayHeader(char* feedUrl, struct winsize window) {
+    // Set menu color
+    attron(COLOR_PAIR(MENU_COLOR));
+    clear();
+    
+    // Display header
+    PrintBar(window);
+    printw("Prompter v 0.0.1");
+    mvprintw(1, window.ws_col - 9 - strlen(feedUrl), "Source : %s", feedUrl);
+    PrintBar(window);
+    
+    // Reset color
+    attroff(COLOR_PAIR(MENU_COLOR));
+}
+
+/**
+ * Display prompt for information and get user's selection
+ */
+int getSelection(struct winsize window, int articleCount) {
+    int option;
+    
+    attron(COLOR_PAIR(MENU_COLOR));
+    
+    move(window.ws_row - 2, 0);
+    PrintBar(window);
+    
+    // Prompt for selection and read it in
+    printw("Selection (0 to quit) > ");   
+    refresh();
+    
+    // Read in new selection until we get a valid selection
+    scanw("%d", &option);
+    while(option < 0 || option > articleCount) {
+        mvprintw(window.ws_row - 1, 0, "Invalid selection. New selection (0 to quit) > ");
+        scanw("%d", &option);
+    }
+    
+    return option;
+}
+
+/**
+ * Display list of articles using ncurses library
+ */
+void displayArticles(ArticleStruct** articles, int articleCount, ArgumentStruct* args) {
+    
+    // Initialize variables
+    int option = 1, index = 0;
+    
+    // Initialize ncurses properties
+    struct winsize window = initializeNcurses();
+    
     while(1) {
         
-        // Set menu color
-        attron(COLOR_PAIR(MENU_COLOR));
-        clear();
+        // Display header each time
+        displayHeader(args->url, window);
         
-        // Output heading
-        PrintBar(window);
-        printw("Prompter v 0.0.1");
-        mvprintw(1, window.ws_col - 9 - strlen(args->url), "Source : %s", args->url);
-        PrintBar(window);
-
+        // If we have valid articles
         if (articles) {
             index = 0;
             
             // While we have an article to print
+            // Offset index by one to start count at 1
             while(index < articleCount) {  
-  
-                // If it's already read then change the color back to standard
-                if (!articles[index]->unread)
-                    attron(COLOR_PAIR(STANDARD_COLOR));
-                  
-                // Print out title                
-                if (strlen(articles[index]->title) < window.ws_col - 6)
-                    // If the title will fit in full, display it
-                    printw("%3d : %s\n", index + 1, articles[index]->title);
-                else 
-                    // If not, print out the part that will fit and an ellipsis
-                    printw("%3d : %.*s...\n", \
-                        index + 1, window.ws_col - 10, articles[index]->title);
-                
-                // Restore color
-                attron(COLOR_PAIR(MENU_COLOR));
-                
+                displayMenuArticle(articles[index], window, index + 1);
                 index++;
             }
         }
         
-        attroff(COLOR_PAIR(MENU_COLOR));
-        attron(COLOR_PAIR(STANDARD_COLOR));
-        
-        move(window.ws_row - 2, 0);
-        PrintBar(window);
-        
-        // Prompt for selection and read it in
-        printw("Selection (0 to quit) > ");   
-        refresh();
-        
-        // Read in new selection until we get a valid selection
-        scanw("%d", &option);
-        while(option < 0 || option > articleCount) {
-            mvprintw(window.ws_row - 1, 0, "Invalid selection. New selection (0 to quit) > ");
-            scanw("%d", &option);
-        }
+        option = getSelection(window, articleCount);
     
         // When selection is 0 exit
         if (option == 0)
@@ -245,7 +283,6 @@ void displayArticles(ArticleStruct** articles, int articleCount, ArgumentStruct*
     }
     
     // Clear screen
-    attroff(COLOR_PAIR(MENU_COLOR));
     clear();
     refresh();
 }

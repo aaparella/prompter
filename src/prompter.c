@@ -28,13 +28,13 @@ int main(int argc, char* argv[]) {
     // Get RSS feed from server
     if (args->update) {
         if(get(&response, args->url)) {
-            printf("Error in performing CURL\n");
+            printf("ERROR : Could not find feed at %s\n", args->url);
             return 1;
         }
     
         // Write result out to file
         if(storeFeed(response, args->dataFile, args->tempDirectory)) {
-            printf("Error writing response to file\n");
+            printf("ERROR : Writing response to file (Running again should fix this)\n");
             return 1;
         }
     }
