@@ -41,6 +41,35 @@ int tagCompare(char* openingTag, char* closingTag) {
     return !strncmp(openingTag, closingTag + 1, strlen(closingTag) - 1);
 }
 
+/**
+ * Process HTML tag
+ * Properties -> Properties of tag being checked
+ * Stack -> Stack used for parsing
+ */
+int processTag(char* properties, Stack* stack) {
+    
+    // Check if a singleton tag (only one should appear)
+    if (!isSingletonTag(properties)) {
+        // If not a closing tag, push onto stack
+        if (properties[0] != '/')
+            push(stack, properties);
+        else {
+            // Top tag on stack should correspond to this closing tag
+            char* openingTag = popElement(stack);
+            if (openingTag) {
+                // If opening tag corresponds to closing tag, return failure
+                if (!tagCompare(openingTag, properties))
+                    return 0;
+                // Otherwise return success
+                else
+                    return 1;
+            }
+        }
+    }
+    
+    // Indicate the tag is properly formatted
+    return 1;
+}
 
 /**
  * Parse HTML page
@@ -59,28 +88,13 @@ char* ParseHtml(char* html) {
         
         while(properties) {
             
-            // If this evaluates to false, tag is a singleton, and can be ignored
-            if (!isSingletonTag(properties)) {
-                // Opening tag
-                if (properties[0] != '/')
-                    // Push this tag onto the stack
-                    push(stack, properties);
-                // Closing tag
-                else {
-                    // Get the last opening tag
-                    char* openingTag = popElement(stack);
-                    
-                    // Make comparison, must be equal or else HTML is invalid
-                    if (openingTag) {
-                        if (!tagCompare(openingTag, properties)) {
-                            // Free story and return error message
-                            free(story);    
-                            return "Story not parsed correctly. Sorry :(";
-                        }
-                    }
-                }
+            // False if the tag is not properly formatted
+            if (!processTag(properties, stack)) {
+                // Free story and return error message
+                free(story);
+                return "Story not parsed correctly. Sorry :(\n";
             }
-            
+                
             // Find content
             content = strsep(&html, "<");
 
