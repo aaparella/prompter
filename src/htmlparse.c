@@ -32,7 +32,6 @@ int isSingletonTag(char * tag) {
 }
 
 
-
 /**
  * Return 1 if the two tags are of the same type
  * Return 0 if the two tags are of different types
@@ -40,6 +39,7 @@ int isSingletonTag(char * tag) {
 int tagCompare(char* openingTag, char* closingTag) {
     return !strncmp(openingTag, closingTag + 1, strlen(closingTag) - 1);
 }
+
 
 /**
  * Process HTML tag
@@ -70,6 +70,7 @@ int processTag(char* properties, Stack* stack) {
     // Indicate the tag is properly formatted
     return 1;
 }
+
 
 /**
  * Parse HTML page

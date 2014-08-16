@@ -32,6 +32,7 @@ static size_t write_data(void *response, size_t size, size_t nmemb, MessageStruc
     return responseSize;
 }
 
+
 /**
  * Perform curl request
  * Stores response from request in response paramter
@@ -69,6 +70,7 @@ int get(MessageStruct* response, char* url) {
 	
     return 0;
 }
+
 
 /**
  * Store response in temporary file

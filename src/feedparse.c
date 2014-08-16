@@ -118,6 +118,7 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
     return article;
 }
 
+
 /**
  * Display the menu entry item for an article
  */
@@ -179,6 +180,7 @@ void displayNCurses(ArticleStruct* article, struct winsize window) {
     getch();		
 }
 
+
 /**
  * Initialize NCurses variables and screen, get window information
  */
@@ -200,6 +202,7 @@ struct winsize initializeNcurses() {
     return window;
 }
 
+
 /**
  * Display header of article view page
  */
@@ -217,6 +220,7 @@ void displayHeader(char* feedUrl, struct winsize window) {
     // Reset color
     attroff(COLOR_PAIR(MENU_COLOR));
 }
+
 
 /**
  * Display prompt for information and get user's selection
@@ -242,6 +246,7 @@ int getSelection(struct winsize window, int articleCount) {
     
     return option;
 }
+
 
 /**
  * Display list of articles using ncurses library
@@ -332,7 +337,6 @@ void freeArticles(ArticleStruct ** articles, int articleCount) {
         free(articles);
     }
 }
-
 
 
 /**

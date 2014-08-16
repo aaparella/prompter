@@ -61,6 +61,7 @@ char* push(Stack* stack, char* element) {
     return stack->elements[stack->count - 1];
 }
 
+
 /**
  * Pop off top element of stack
  * Returns element popped, or NULL if nothing to pop

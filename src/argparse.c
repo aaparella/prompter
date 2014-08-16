@@ -110,6 +110,7 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
     return args;	
 }
 
+
 /**
  * Store arguments used for this execution
  * Creates file if it does not already exis
