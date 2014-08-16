@@ -11,7 +11,7 @@
  * Remove leading whitespace of content
  */
 char* trimWhiteSpace(char* content) {
-    content = strtok(content, " ");
+    content = strtok(content, " \t");
     
     return (content ? content : "");
 }
