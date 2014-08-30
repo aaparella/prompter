@@ -17,6 +17,7 @@
         ArticleStruct** articles;
         int articleCount;
         char* url;
+        char* title;
     } RSSFeed;
     
     

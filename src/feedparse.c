@@ -40,6 +40,40 @@ void PrintBar(struct winsize window) {
 
 
 /**
+ * Find the author's name
+ */
+char* findAuthor(xmlDocPtr doc, xmlNodePtr cur) {
+    xmlNodePtr temp = cur->xmlChildrenNode;
+    xmlChar* tempKey;
+    char* author = NULL;
+    
+    // While we have a subtag
+    while(temp) {
+        tempKey = xmlNodeListGetString(doc, temp->xmlChildrenNode, 1);
+        
+        if (tempKey) {
+            // If it's the authors name store it
+            if (!xmlStrcmp(temp->name, (xmlChar *) "name")) {
+                author = malloc(strlen((char *) tempKey));
+                strcpy(author, (char *) tempKey);
+                
+                break;
+            }
+        }
+        
+        // Advance to next subtag
+        temp = temp->next;	
+    }
+    
+    // If we ever found it, free the key
+    if (tempKey)
+        xmlFree(tempKey);
+        
+    return author;
+}
+
+
+/**
  * Parse individual story
  * Internal use only, not in header
  */
@@ -67,13 +101,11 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
             if (!xmlStrcmp(cur->name, (xmlChar *) "title")) {
                 article->title = malloc(strlen((char *) key));
                 strcpy(article->title, (char *) key);
-                // article->published[strlen((char *) key)] = '\0';
             }
             // Check if it was the published timestamp
             else if (!xmlStrcmp(cur->name, (xmlChar *) "published")) {
                 article->published = malloc(strlen((char *) key));
                 strcpy(article->published, (char *) key);
-                // article->published[strlen((char *) key)] = '\0';
             }
             else if (!xmlStrcmp(cur->name, (xmlChar *) "content")) {
                 // Because HTML elements are in the story, parse it specially
@@ -81,29 +113,7 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
             }
             // If it's the author, descend a level and find name
             else if (!xmlStrcmp(cur->name, (xmlChar *) "author")) {
-                xmlNodePtr temp = cur->xmlChildrenNode;
-                xmlChar* tempKey;
-                
-                // While we have a subtag
-                while(temp) {
-                    tempKey = xmlNodeListGetString(doc, temp->xmlChildrenNode, 1);
-                    
-                    if (tempKey) {
-                        // If it's the authors name store it
-                        if (!xmlStrcmp(temp->name, (xmlChar *) "name")) {
-                            article->author = malloc(strlen((char *) tempKey));
-                            strcpy(article->author, (char *) tempKey);
-                            // article->published[strlen((char *) tempKey)] = '\0';
-                        }
-                    }
-                    
-                    // Advance to next subtag
-                    temp = temp->next;	
-                }
-                
-                // If we ever found it, free the key
-                if (tempKey)
-                    xmlFree(tempKey);
+                article->author = findAuthor(doc, cur);
             }
             
             // If we found a key, free it
@@ -147,7 +157,7 @@ void displayMenuArticle(ArticleStruct* article, struct winsize window, int index
 /**
  * Display article's contents using ncurses library
  */
-void displayNCurses(ArticleStruct* article, struct winsize window) {
+void displayArticleContent(ArticleStruct* article, struct winsize window) {
     
     // Print article contents to ncurses window
     clear();
@@ -206,7 +216,7 @@ struct winsize initializeNcurses() {
 /**
  * Display header of article view page
  */
-void displayHeader(char* feedUrl, struct winsize window) {
+void displayHeader(char* title, struct winsize window) {
     // Set menu color
     attron(COLOR_PAIR(MENU_COLOR));
     clear();
@@ -214,7 +224,7 @@ void displayHeader(char* feedUrl, struct winsize window) {
     // Display header
     PrintBar(window);
     printw("Prompter v 0.0.1");
-    mvprintw(1, window.ws_col - 9 - strlen(feedUrl), "Source : %s", feedUrl);
+    mvprintw(1, window.ws_col - 9 - strlen(title), "Source : %s", title);
     PrintBar(window);
     
     // Reset color
@@ -251,7 +261,7 @@ int getSelection(struct winsize window, int articleCount) {
 /**
  * Display list of articles using ncurses library
  */
-void displayArticles(ArticleStruct** articles, int articleCount, ArgumentStruct* args) {
+void displayArticles(ArticleStruct** articles, int articleCount, char* title) {
     
     // Initialize variables
     int option = 1, index = 0;
@@ -262,7 +272,7 @@ void displayArticles(ArticleStruct** articles, int articleCount, ArgumentStruct*
     while(1) {
         
         // Display header each time
-        displayHeader(args->url, window);
+        displayHeader(title, window);
         
         // If we have valid articles
         if (articles) {
@@ -283,7 +293,7 @@ void displayArticles(ArticleStruct** articles, int articleCount, ArgumentStruct*
             break;
         
         // Display specified article and mark it as read
-        displayNCurses(articles[option-1], window);
+        displayArticleContent(articles[option-1], window);
         articles[option-1]->unread = 0;
     }
     
@@ -298,7 +308,7 @@ void displayArticles(ArticleStruct** articles, int articleCount, ArgumentStruct*
  */
 void displayFeed(RSSFeed* feed, ArgumentStruct* args) {
     if (feed->articles && feed->articleCount)
-        displayArticles(feed->articles, feed->articleCount, args);
+        displayArticles(feed->articles, feed->articleCount, feed->title);
     else
         printf("No articles to display\n");
 }
@@ -406,7 +416,17 @@ RSSFeed* parseFeed(ArgumentStruct* args) {
             cur = cur->xmlChildrenNode;
             
             while(cur && (articlesToFetch || printAll)) {	
-
+                // Grab title of feed if we can find it
+                if (!xmlStrcmp(cur->name, (xmlChar *) "title")) {
+                    xmlChar* key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+                    
+                    if (key) {
+                        feed->title = malloc(strlen((char *) key));
+                        strcpy(feed->title, (char *) key);
+                        
+                        free(key);
+                    }
+                }
                 // If we find a story, parse it, add it to array
                 if (!xmlStrcmp(cur->name, (xmlChar *) "entry")) {
                     ArticleStruct* article = parseStory(doc, cur);
