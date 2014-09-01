@@ -73,6 +73,47 @@ int get(MessageStruct* response, char* url) {
 
 
 /**
+ * Retrieve the last time that the given URL was updated
+ */
+struct tm* getTime(MessageStruct* response, char* url) {
+    CURL* curl;
+    CURLcode res;
+        
+    struct tm* timestamp = malloc(sizeof(struct tm));
+    
+    response->size = 0;
+    response->contents = malloc(1);
+    
+    curl = curl_easy_init();
+    
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);    // Specify callback function
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);          // Specify container
+        curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
+        curl_easy_setopt(curl, CURLOPT_FILETIME, 1L);
+        
+        res = curl_easy_perform(curl);
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perofmr() failed: %s\n", curl_easy_strerror(res));
+            return NULL;
+        }
+        
+        char* line = strstr(response->contents, "Last-Modified");
+        if (line) {
+            line = strtok(line, "\n");
+            strptime(line, "Last-Modified: %a, %d %b %Y %X %Z", timestamp);
+        }
+        
+        curl_easy_cleanup(curl);
+    }
+    
+    return timestamp;
+}
+
+
+/**
  * Store response in temporary file
  * Use pre-processor directives to determine where to store
  * response

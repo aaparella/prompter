@@ -10,6 +10,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <curl/curl.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <time.h>
 
 #include "argparse.h"
 #include "feedparse.h"
@@ -23,33 +26,52 @@ int main(int argc, char* argv[]) {
     args = parseArguments(argc, argv);
     
     // Struct to store response from CURL
-    MessageStruct response;
+    MessageStruct response;    
+    struct tm* lastUpdated = getTime(&response, args->url);
     
     // Get RSS feed from server
     if (args->update) {
-        if(get(&response, args->url)) {
-            printf("ERROR : Could not find feed at %s\n", args->url);
-            return 1;
+        // If we're either not refetching the same URL, or it has updates
+        if (args->ignoreTimestamp || fetchingNewURL(args) || (difftime(mktime(lastUpdated), mktime(&(args->lastUpdated)))) >= 0) {
+            if(get(&response, args->url)) {
+                printf("ERROR : Could not find feed at %s\n", args->url);
+                
+                freeArgs(args);
+                
+                return 1;
+            }
+        
+            // Write result out to file
+            if(storeFeed(response, args->dataFile, args->tempDirectory)) {
+                printf("ERROR : Writing response to file (Running again should fix this)\n");
+                
+                freeArgs(args);
+                
+                return 1;
+            }
         }
-    
-        // Write result out to file
-        if(storeFeed(response, args->dataFile, args->tempDirectory)) {
-            printf("ERROR : Writing response to file (Running again should fix this)\n");
-            return 1;
+        else {
+            printf("No updates for feed : %s\n", args->url);
+            freeArgs(args);
+            
+            return 0;
         }
     }
+    
+    
     
     // Create array of article sturctures
     RSSFeed* feed = NULL;
     feed = parseFeed(args);
     
     // Display feed
-    displayFeed(feed, args);
+    // displayFeed(feed, args);
+    storeSettings(args, feed);
     
     // Free dynamically allocated articles
     freeFeed(feed);
     
     // Args is dynamically allocated, free it!
-    free(args);
+    freeArgs(args);
     return 0;
 }

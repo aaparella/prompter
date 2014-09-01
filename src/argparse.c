@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "argparse.h"
 
@@ -23,18 +24,33 @@ ArgumentStruct* getDefaultArguments() {
         defaults->tempDirectory = "/Library/Caches/prompter";
         defaults->settingsFile  = "/Library/Caches/prompter/settings.txt";
         defaults->dataFile      = "/Library/Caches/prompter/data.txt";
+    // If being run on Windows
     #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
         defaults->tempDirectory = "C:\WINDOWS\TEMP\prompter";
         defaults->settingsFile  = "C:\WINDOWS\TEMP\prompter\settings.txt";
         defaults->dataFile      = "C:\WINDOWS\TEMP\prompter\data.txt";
     #endif
 
-    defaults->stdout       = 1;
-    defaults->color        = 1;  // Default to have color
-    defaults->articleCount = -1; // Default to printing all articles
-    defaults->update       = 1;  // Default to fetching new content
+    defaults->stdout           = 1;
+    defaults->color            = 1;  // Default to have color
+    defaults->articleCount     = -1; // Default to printing all articles
+    defaults->update           = 1;  // Default to fetching new content
+    defaults->ignoreTimestamp  = 0;
     
     return defaults;
+}
+
+
+/**
+ * Free dynamically allocated args object
+ */
+void freeArgs(ArgumentStruct* args) {
+    if (args) {
+        free(args->previouslyFetchedTitle);
+        free(args->previouslyFetchedURL);
+        
+        free(args);
+    }
 }
 
 
@@ -45,6 +61,9 @@ ArgumentStruct* getDefaultArguments() {
 void displayUsage(char** argv) {
     printf("Usage : %s {OPTION}\n\n", argv[0]);
 
+    printf("-a --all:");
+    printf("\tShow all articles, ignoring whether or not they are new\n");
+    
     printf("-s --silent:");
     printf("\tOnly update, do not output results\n");
 
@@ -71,6 +90,49 @@ void displayUsage(char** argv) {
 
 
 /**
+ * Check if we are fetching the same URL as we did last time
+ */
+int fetchingNewURL(ArgumentStruct* args) {
+    if (args && args->previouslyFetchedURL && args->url)
+        return (!strcmp(args->previouslyFetchedURL, args->url));
+    
+    return 0;
+}
+
+
+/**
+ * Load the last settings used for comparison
+ */
+void loadLastSettings(ArgumentStruct* args) {
+    FILE* fp = fopen(args->settingsFile, "r");
+    if (fp) {
+        char* line = NULL;
+        size_t len = 0;
+        
+        getline(&line, &len, fp);
+        if (len) {
+            args->previouslyFetchedTitle = malloc(len);
+            strcpy(args->previouslyFetchedTitle, line);
+        }
+        else
+            return;
+        
+        getline(&line, &len, fp);
+        if (len) {
+            args->previouslyFetchedURL = malloc(len);
+            strcpy(args->previouslyFetchedURL, line);
+        }
+        else
+            return;
+            
+        getline(&line, &len, fp);
+        if (len)
+            strptime(line, "%a %b %d %X %Y", &(args->lastUpdated));
+    }
+}
+
+
+/**
  * Parse command line options
  * Return a configured ArgumentStruct* on success
  * Return NULL if arguments cannot be successfuly parsed
@@ -84,7 +146,9 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
     // For each flag, next item listed should be the desired value
     // Will add error checking eventually
     for (int i = 1; i < argc; i++) {
-        if (!strcmp("-f", argv[i]) || !strcmp("--feed", argv[i]))
+        if (!strcmp("-a", argv[i]) || !strcmp("--all", argv[i]))
+            args->ignoreTimestamp = 1;
+        else if (!strcmp("-f", argv[i]) || !strcmp("--feed", argv[i]))
             args->url = argv[++i];
         else if (!strcmp("-s", argv[i]) || !strcmp("--silent", argv[i]))
             args->stdout = 0;
@@ -107,17 +171,7 @@ ArgumentStruct* parseArguments(int argc, char* argv[]) {
             displayUsage(argv);
     }
     
+    loadLastSettings(args);
+        
     return args;	
-}
-
-
-/**
- * Store arguments used for this execution
- * Creates file if it does not already exis
- */
-int storeArgs(ArgumentStruct* args, char* filepath, char* directory) {
-    
-    // Still to be written
-    
-    return 0;
 }
