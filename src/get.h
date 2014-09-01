@@ -12,4 +12,6 @@
     int get(MessageStruct* message, char* url);       // Send get HTTP request to specified URL
     int storeFeed(MessageStruct message, char* filepath, char* directory); // Store message contents to temp file
     struct tm* getTime(MessageStruct* message, char* url);
+    int timeDiff(struct tm* beginning, struct tm* end);
+    
 #endif

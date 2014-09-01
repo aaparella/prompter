@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #include "get.h"
 
@@ -139,3 +140,45 @@ int storeFeed(MessageStruct response, char* filepath, char* directory) {
 	
     return 0;
 }
+
+
+/**
+ * Manually check time, because the difftime function is not working correctly
+ */
+int timeDiff(struct tm* beg, struct tm* end) {
+        
+    printf("%s\n%s\n", asctime(beg), asctime(end));
+    
+    if (beg->tm_year == end->tm_year) {
+        if (beg->tm_mon == end->tm_mon) {
+            if (beg->tm_mday == end->tm_mday) {
+                if (beg->tm_hour == end->tm_hour) {
+                    if (beg->tm_min == end->tm_min) {
+                        printf("Seconds\n");
+                        return (beg->tm_sec < end->tm_sec);
+                    }
+                    printf("Minutes\n");
+                    return (beg->tm_min < end->tm_min);
+                }
+                printf("Hours\n");
+                printf("%d %d\n", beg->tm_hour, end->tm_hour);
+                return (beg->tm_hour < end->tm_hour);
+            }
+            printf("Days\n");
+            return (beg->tm_mday < end->tm_mday);
+        }
+        printf("Months\n");
+        return (beg->tm_mon < end->tm_mon);
+    }
+    printf("Years");
+    return (beg->tm_year < end->tm_year);
+}
+
+
+
+
+
+
+
+
+
