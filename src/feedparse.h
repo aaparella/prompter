@@ -18,10 +18,13 @@
         int articleCount;
         char* url;
         char* title;
+        struct tm timestamp;
     } RSSFeed;
     
     
     RSSFeed* parseFeed(ArgumentStruct* args);               // Prase RSS data
     void displayFeed(RSSFeed* feed, ArgumentStruct* args);  // Display feed
     void freeFeed(RSSFeed* feed);                           // Free feed
+    int storeSettings(ArgumentStruct* args, RSSFeed* feed);
+    
 #endif

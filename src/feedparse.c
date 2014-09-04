@@ -5,6 +5,8 @@
 #include <libxml/xmlreader.h>
 #include <sys/ioctl.h>
 #include <curses.h>
+#include <sys/stat.h>
+#include <time.h>
 
 #include "feedparse.h"
 #include "argparse.h"
@@ -17,15 +19,35 @@
 #define STANDARD_COLOR 5
 
 
+/**
+ * Store arguments used for this execution, only needed settings
+ * Creates file if it does not already exis
+ */
+int storeSettings(ArgumentStruct* args, RSSFeed* feed) {
+
+    // Open settings file
+    FILE* fp = fopen(args->settingsFile, "w+r");
+    // If it does not exist, create it
+    if (!fp) {
+        mkdir(args->tempDirectory, S_IRWXU);
+        fp = fopen(args->settingsFile, "w+r");
+    }
+
+    fprintf(fp, "%s\n%s\n%s",feed->title, feed->url, asctime(&(feed->timestamp)));
+
+    return 0;
+}
+
+
 /** 
  * Parse conents of a story
  * Have to handle the special HTML tags specially
  */
 char* parseContent(xmlDocPtr doc, xmlNodePtr contentRoot) {
-    xmlChar* rawStory = xmlNodeListGetString(doc, contentRoot->xmlChildrenNode, 1);
-    rawStory = (xmlChar *) ParseHtml((char *) rawStory);
+    xmlChar* story = xmlNodeListGetString(doc, contentRoot->xmlChildrenNode, 1);
+    story = (xmlChar *) ParseHtml((char *) story);
      
-    return (char *) rawStory;
+    return (char *) story;
 }
 
 
@@ -379,6 +401,20 @@ RSSFeed* getNewFeed(ArgumentStruct* args) {
 
 
 /**
+ * Get timestamp as tm struct
+ */
+struct tm getTimeStamp(xmlChar* tmString) {
+    struct tm timeStamp;
+    
+    // Format string that specifically matches the verge, daring fireball
+    // Probably not as generic as I would like, but ah well
+    strptime((char *) tmString, "%Y-%m-%dT%X-%z", &timeStamp);
+    
+    return timeStamp;
+}
+
+
+/**
  * Parse through feed XML using libxml2 library
  * Extensively commented for educational purposes
  */
@@ -427,8 +463,14 @@ RSSFeed* parseFeed(ArgumentStruct* args) {
                         free(key);
                     }
                 }
+                // Set timestamp
+                else if (!xmlStrcmp((cur->name), (xmlChar *) "updated")) {
+                    xmlChar* key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+                    if (key)
+                        feed->timestamp = getTimeStamp(key);
+                }
                 // If we find a story, parse it, add it to array
-                if (!xmlStrcmp(cur->name, (xmlChar *) "entry")) {
+                else if (!xmlStrcmp(cur->name, (xmlChar *) "entry")) {
                     ArticleStruct* article = parseStory(doc, cur);
                     articles[articleCount++] = article;
                     
