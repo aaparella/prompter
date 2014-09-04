@@ -11,6 +11,9 @@ Usage
 
 prompter {OPTION}
 
+-a --all:
+	Fetch results regardless of whether or not the feed has been updated since last fetch
+
 -s --silent:
 	Only update, do not output results
 	
