@@ -145,32 +145,25 @@ int storeFeed(MessageStruct response, char* filepath, char* directory) {
 /**
  * Manually check time, because the difftime function is not working correctly
  */
-int timeDiff(struct tm* beg, struct tm* end) {
-        
-    printf("%s\n%s\n", asctime(beg), asctime(end));
+int timeDiff(struct tm* beginning, struct tm* ending) {
     
-    if (beg->tm_year == end->tm_year) {
-        if (beg->tm_mon == end->tm_mon) {
-            if (beg->tm_mday == end->tm_mday) {
-                if (beg->tm_hour == end->tm_hour) {
-                    if (beg->tm_min == end->tm_min) {
-                        printf("Seconds\n");
+    time_t begtwo = mktime(beginning);
+    time_t endtwo = mktime(ending);
+    
+    struct tm* beg = gmtime(&begtwo);
+    struct tm* end = gmtime(&endtwo);    
+    
+    if (beg->tm_year == end->tm_year)
+        if (beg->tm_mon == end->tm_mon)
+            if (beg->tm_mday == end->tm_mday)
+                if (beg->tm_hour == end->tm_hour) 
+                    if (beg->tm_min == end->tm_min) 
                         return (beg->tm_sec < end->tm_sec);
-                    }
-                    printf("Minutes\n");
                     return (beg->tm_min < end->tm_min);
-                }
-                printf("Hours\n");
-                printf("%d %d\n", beg->tm_hour, end->tm_hour);
                 return (beg->tm_hour < end->tm_hour);
-            }
-            printf("Days\n");
             return (beg->tm_mday < end->tm_mday);
-        }
-        printf("Months\n");
         return (beg->tm_mon < end->tm_mon);
-    }
-    printf("Years");
+    
     return (beg->tm_year < end->tm_year);
 }
 

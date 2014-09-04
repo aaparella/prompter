@@ -94,7 +94,7 @@ void displayUsage(char** argv) {
  */
 int fetchingNewURL(ArgumentStruct* args) {
     if (args && args->previouslyFetchedURL && args->url)
-        return (!strcmp(args->previouslyFetchedURL, args->url));
+        return strcmp(args->previouslyFetchedURL, args->url);
     
     return 0;
 }
@@ -113,6 +113,9 @@ void loadLastSettings(ArgumentStruct* args) {
         if (len) {
             args->previouslyFetchedTitle = malloc(len);
             strcpy(args->previouslyFetchedTitle, line);
+            
+            if (args->previouslyFetchedTitle[strlen(line) - 1] == '\n')
+                args->previouslyFetchedTitle[strlen(line) - 1] = 0;
         }
         else
             return;
@@ -121,6 +124,9 @@ void loadLastSettings(ArgumentStruct* args) {
         if (len) {
             args->previouslyFetchedURL = malloc(len);
             strcpy(args->previouslyFetchedURL, line);
+            
+            if (args->previouslyFetchedURL[strlen(line) - 1] == '\n')
+                args->previouslyFetchedURL[strlen(line) - 1] = 0;
         }
         else
             return;

@@ -32,7 +32,9 @@ int main(int argc, char* argv[]) {
     // Get RSS feed from server
     if (args->update) {
         // If we're either not refetching the same URL, or it has updates
-        if (args->ignoreTimestamp || fetchingNewURL(args) || timeDiff(&(args->lastUpdated), lastUpdated)) {
+        if (args->ignoreTimestamp || fetchingNewURL(args) || \
+            timeDiff(&(args->lastUpdated), lastUpdated)) {
+                
             if(get(&response, args->url)) {
                 printf("ERROR : Could not find feed at %s\n", args->url);
                 
