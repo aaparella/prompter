@@ -161,15 +161,10 @@ void displayMenuArticle(ArticleStruct* article, struct winsize window, int index
         attron(COLOR_PAIR(STANDARD_COLOR));
     else
         attron(COLOR_PAIR(MENU_COLOR));
-      
-    // Print out title                
-    if (strlen(article->title) < window.ws_col - 6)
-        // If the title will fit in full, display it
-        printw("%3d : %s\n", index, article->title);
-    else 
-        // If not, print out the part that will fit and an ellipsis
-        printw("%3d : %.*s...\n", \
-            index + 1, window.ws_col - 10, article->title);
+    
+    // Print only as many characters as will fit, and print ellipsis?
+    printw("%3d : %.*s", index + 1, window.ws_col - 10, article->title);
+    strlen(article->title) < window.ws_col - 6 ? printw("\n") : printw("...\n");
     
     // Restore color
     attron(COLOR_PAIR(STANDARD_COLOR));

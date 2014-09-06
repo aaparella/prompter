@@ -144,27 +144,23 @@ int storeFeed(MessageStruct response, char* filepath, char* directory) {
 
 /**
  * Manually check time, because the difftime function is not working correctly
+ * This function makes me hate myself sometimes
  */
 int timeDiff(struct tm* beginning, struct tm* ending) {
     
+    // Get time_t structs because, of course, gmtime only takes time_t structs
     time_t begtwo = mktime(beginning);
     time_t endtwo = mktime(ending);
     
+    // Why oh why does this return a tm struct instead of time_t
     struct tm* beg = gmtime(&begtwo);
     struct tm* end = gmtime(&endtwo);    
     
-    if (beg->tm_year == end->tm_year)
-        if (beg->tm_mon == end->tm_mon)
-            if (beg->tm_mday == end->tm_mday)
-                if (beg->tm_hour == end->tm_hour) 
-                    if (beg->tm_min == end->tm_min) 
-                        return (beg->tm_sec < end->tm_sec);
-                    return (beg->tm_min < end->tm_min);
-                return (beg->tm_hour < end->tm_hour);
-            return (beg->tm_mday < end->tm_mday);
-        return (beg->tm_mon < end->tm_mon);
+    // This is just depressing
+    time_t correctedBeginning = mktime(beg);
+    time_t correctedEnding = mktime(end);
     
-    return (beg->tm_year < end->tm_year);
+    return difftime(correctedBeginning, correctedEnding);
 }
 
 
