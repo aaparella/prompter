@@ -29,6 +29,9 @@ int main(int argc, char* argv[]) {
     MessageStruct response;    
     struct tm* lastUpdated = getTime(&response, args->url);
     
+    // Preapre response for re-use
+    freeResponse(response);
+    
     // Get RSS feed from server
     if (args->update) {
         // If we're either not refetching the same URL, or it has updates
@@ -70,10 +73,10 @@ int main(int argc, char* argv[]) {
     displayFeed(feed, args);
     storeSettings(args, feed);
     
-    // Free dynamically allocated articles
+    // Free everything that has been dynamically allocated
     freeFeed(feed);
-    
-    // Args is dynamically allocated, free it!
+    freeResponse(response);
     freeArgs(args);
+    
     return 0;
 }

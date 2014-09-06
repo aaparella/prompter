@@ -74,6 +74,16 @@ int get(MessageStruct* response, char* url) {
 
 
 /**
+ * Free response struct
+ */
+void freeResponse(MessageStruct response) {
+    if (response.contents) {
+        free (response.contents);
+    }
+}
+
+
+/**
  * Retrieve the last time that the given URL was updated
  */
 struct tm* getTime(MessageStruct* response, char* url) {
@@ -98,6 +108,8 @@ struct tm* getTime(MessageStruct* response, char* url) {
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
             fprintf(stderr, "curl_easy_perofmr() failed: %s\n", curl_easy_strerror(res));
+            freeResponse(*response);
+            
             return NULL;
         }
         
