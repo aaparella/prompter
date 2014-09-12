@@ -155,7 +155,7 @@ int storeFeed(MessageStruct response, char* filepath, char* directory) {
 
 
 /**
- * Manually check time, because the difftime function is not working correctly
+ * Check the difference between two tm structs
  * This function makes me hate myself sometimes
  */
 int timeDiff(struct tm* beginning, struct tm* ending) {

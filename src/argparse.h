@@ -1,7 +1,7 @@
 #ifndef ARGPARSE_H
     #define ARGPARSE_H
 
-    #include <time.h>
+    struct tm;
 
     typedef struct {
         char* url;            // RSS feed URL

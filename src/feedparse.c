@@ -163,7 +163,7 @@ void displayMenuArticle(ArticleStruct* article, struct winsize window, int index
         attron(COLOR_PAIR(MENU_COLOR));
     
     // Print only as many characters as will fit, and print ellipsis?
-    printw("%3d : %.*s", index + 1, window.ws_col - 10, article->title);
+    printw("%3d : %.*s", index, window.ws_col - 10, article->title);
     strlen(article->title) < window.ws_col - 6 ? printw("\n") : printw("...\n");
     
     // Restore color
