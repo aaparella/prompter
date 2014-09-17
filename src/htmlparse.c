@@ -11,12 +11,22 @@
  * Remove leading whitespace of content
  */
 char* trimWhiteSpace(char* content) {
+
+    if (!strlen(content))
+        return "";
+
+    char* wrPtr;
+    char* rdPtr;
     
-    // for (int i = 0; content[i] != 0; i++)
-    //     if (content[i] == '\n' || content[i] == '\t')
-    //         content[i] = content[i + 1];
+    for (rdPtr = wrPtr = content; *rdPtr != 0 && *(rdPtr + 1) != 0; rdPtr++)        
+        if (*rdPtr != '\t') 
+            if ((*rdPtr != '\n') || (*(rdPtr + 1) != '\n'))
+                *(wrPtr++) = *(rdPtr);
     
-    return (content ? content : "");
+    wrPtr += 1;
+    *wrPtr = '\0';
+    
+    return content;
 }
 
 
@@ -89,7 +99,8 @@ char* ParseHtml(char* html) {
     if (content) {
         // Chew threw first tag contents
         char* properties = strsep(&html, ">");
-        properties[strlen(properties)] = 0;
+        
+        properties[strlen(properties)] = 0;            
         properties = trimWhiteSpace(properties);        
         
         while(properties) {
@@ -105,7 +116,6 @@ char* ParseHtml(char* html) {
             content = strsep(&html, "<");
             content[strlen(content)] = 0;
             content = trimWhiteSpace(content);
-            // printf("[%s]\n", content);
 
             // Allocate space for content 
             story = realloc(story, strlen(story) + strlen(content) + 1);
