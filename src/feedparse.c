@@ -180,7 +180,9 @@ void displayArticleContent(ArticleStruct* article, struct winsize window) {
     clear();
     
     if (article) {
+        attron(COLOR_PAIR(MENU_COLOR));
         PrintBar(window);
+        attroff(COLOR_PAIR(MENU_COLOR));
         
         if (article->title) {
             attron(COLOR_PAIR(TITLE_COLOR));
@@ -196,7 +198,9 @@ void displayArticleContent(ArticleStruct* article, struct winsize window) {
             printw("%s\n", article->published);
         }
         
+        attron(COLOR_PAIR(MENU_COLOR));
         PrintBar(window);
+        attroff(COLOR_PAIR(MENU_COLOR));
         
         if (article->story) {
             printw("\n%s\n", article->story);
