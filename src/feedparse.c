@@ -308,6 +308,9 @@ void displayArticles(ArticleStruct** articles, int articleCount, char* title) {
         // When selection is 0 exit
         if (option == 0)
             break;
+            
+        // Turn off menu coloring before displaying article
+        attroff(COLOR_PAIR(MENU_COLOR));
         
         // Display specified article and mark it as read
         displayArticleContent(articles[option-1], window);
