@@ -11,7 +11,10 @@
  * Remove leading whitespace of content
  */
 char* trimWhiteSpace(char* content) {
-    content = strtok(content, " \t");
+    
+    // for (int i = 0; content[i] != 0; i++)
+    //     if (content[i] == '\n' || content[i] == '\t')
+    //         content[i] = content[i + 1];
     
     return (content ? content : "");
 }
@@ -86,6 +89,8 @@ char* ParseHtml(char* html) {
     if (content) {
         // Chew threw first tag contents
         char* properties = strsep(&html, ">");
+        properties[strlen(properties)] = 0;
+        properties = trimWhiteSpace(properties);        
         
         while(properties) {
             
@@ -98,6 +103,9 @@ char* ParseHtml(char* html) {
                 
             // Find content
             content = strsep(&html, "<");
+            content[strlen(content)] = 0;
+            content = trimWhiteSpace(content);
+            // printf("[%s]\n", content);
 
             // Allocate space for content 
             story = realloc(story, strlen(story) + strlen(content) + 1);
