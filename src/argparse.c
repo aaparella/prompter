@@ -36,6 +36,8 @@ ArgumentStruct* getDefaultArguments() {
     defaults->articleCount     = -1; // Default to printing all articles
     defaults->update           = 1;  // Default to fetching new content
     defaults->ignoreTimestamp  = 0;
+    defaults->previouslyFetchedTitle = NULL;
+    defaults->previouslyFetchedURL = NULL;
     
     return defaults;
 }
