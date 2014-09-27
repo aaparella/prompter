@@ -9,6 +9,13 @@ Provide RSS URL as only argument. Defaults to RSS feed from theverge.com. Coming
 Usage
 ===
 
+To run : 
+
+1. Download and unzip
+2. cd src
+3. make
+4. ./prompter {OPTIONS}
+
 prompter {OPTION}
 
 -a --all:
