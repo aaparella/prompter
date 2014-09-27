@@ -121,13 +121,15 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
         if (key) {
             // Check if it was title
             if (!xmlStrcmp(cur->name, (xmlChar *) "title")) {
-                article->title = malloc(strlen((char *) key));
-                strcpy(article->title, (char *) key);
+                article->title = (char *) key;
+                // article->title = malloc(strlen((char *) key));
+                // strcpy(article->title, (char *) key);
             }
             // Check if it was the published timestamp
             else if (!xmlStrcmp(cur->name, (xmlChar *) "published")) {
-                article->published = malloc(strlen((char *) key));
-                strcpy(article->published, (char *) key);
+                article->published = (char *) key;
+                // article->published = malloc(strlen((char *) key));
+                // strcpy(article->published, (char *) key);
             }
             else if (!xmlStrcmp(cur->name, (xmlChar *) "content")) {
                 // Because HTML elements are in the story, parse it specially
@@ -139,8 +141,8 @@ ArticleStruct* parseStory(xmlDocPtr doc, xmlNodePtr storyRoot) {
             }
             
             // If we found a key, free it
-            if (key)
-                xmlFree(key);
+            // if (key)
+            //     xmlFree(key);
         }
         
         // Advance through elements
@@ -458,12 +460,8 @@ RSSFeed* parseFeed(ArgumentStruct* args) {
                 if (!xmlStrcmp(cur->name, (xmlChar *) "title")) {
                     xmlChar* key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
                     
-                    if (key) {
-                        feed->title = malloc(strlen((char *) key));
-                        strcpy(feed->title, (char *) key);
-                        
-                        free(key);
-                    }
+                    if (key)
+                        feed->title = (char *) key;
                 }
                 // Set timestamp
                 else if (!xmlStrcmp((cur->name), (xmlChar *) "updated")) {
