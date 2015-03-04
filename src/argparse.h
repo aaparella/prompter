@@ -14,7 +14,7 @@
         int articleCount;     // Number of articles to display
         int update;           // Get new content
         int ignoreTimestamp;
-        
+              
         struct tm lastUpdated;   // Last time the article was fetched
         char* previouslyFetchedTitle;
         char* previouslyFetchedURL;

@@ -303,7 +303,7 @@ void displayArticles(ArticleStruct** articles, int articleCount, char* title) {
             
             // While we have an article to print
             // Offset index by one to start count at 1
-            while(index < articleCount) {  
+            while(index < articleCount && index < window.ws_row - 4) {  
                 displayMenuArticle(articles[index], window, index + 1);
                 index++;
             }
